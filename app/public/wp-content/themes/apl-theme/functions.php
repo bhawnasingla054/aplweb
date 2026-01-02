@@ -84,9 +84,9 @@ add_action('wp_enqueue_scripts', 'apl_theme_enqueue_assets');
  * @return mixed
  */
 function apl_get_theme_mod($key, $default = '') {
-    $value = get_theme_mod($key, $default);
+    $value = get_theme_mod($key, null);
 
-    if ('' === $value || null === $value) {
+    if (null === $value || '' === $value) {
         return $default;
     }
 
@@ -193,49 +193,109 @@ function apl_theme_render_primary_menu() {
  */
 function apl_customize_register($wp_customize) {
     $wp_customize->add_section(
-        'apl_homepage_hero',
+        'apl_home_cms',
         array(
-            'title'    => __('Homepage Hero', 'apl-theme'),
+            'title'    => __('Home (CMS)', 'apl-theme'),
             'priority' => 30,
         )
     );
 
     $settings = array(
-        'apl_hero_badge_label' => array(
-            'label'             => __('Badge Label', 'apl-theme'),
+        'apl_home_hero_badge_label' => array(
+            'label'             => __('Hero Badge Label', 'apl-theme'),
             'default'           => 'NEW',
             'sanitize_callback' => 'sanitize_text_field',
             'type'              => 'text',
         ),
-        'apl_hero_badge_text' => array(
-            'label'             => __('Badge Text', 'apl-theme'),
+        'apl_home_hero_badge_text' => array(
+            'label'             => __('Hero Badge Text', 'apl-theme'),
             'default'           => 'Now with brand new AI integration',
             'sanitize_callback' => 'sanitize_text_field',
             'type'              => 'text',
         ),
-        'apl_hero_heading' => array(
-            'label'             => __('Heading', 'apl-theme'),
+        'apl_home_hero_heading' => array(
+            'label'             => __('Hero Heading', 'apl-theme'),
             'default'           => 'All your work pulled into one powerful place',
             'sanitize_callback' => 'sanitize_text_field',
             'type'              => 'text',
         ),
-        'apl_hero_subheading' => array(
-            'label'             => __('Subheading', 'apl-theme'),
+        'apl_home_hero_subheading' => array(
+            'label'             => __('Hero Subheading', 'apl-theme'),
             'default'           => 'Organize tasks and projects in one connected, accessible platform.',
             'sanitize_callback' => 'sanitize_textarea_field',
             'type'              => 'textarea',
         ),
-        'apl_hero_cta_text' => array(
-            'label'             => __('CTA Text', 'apl-theme'),
+        'apl_home_hero_cta_text' => array(
+            'label'             => __('Hero CTA Text', 'apl-theme'),
             'default'           => 'Get started',
             'sanitize_callback' => 'sanitize_text_field',
             'type'              => 'text',
         ),
-        'apl_hero_cta_url' => array(
-            'label'             => __('CTA URL', 'apl-theme'),
+        'apl_home_hero_cta_url' => array(
+            'label'             => __('Hero CTA URL', 'apl-theme'),
             'default'           => '#',
             'sanitize_callback' => 'esc_url_raw',
             'type'              => 'url',
+        ),
+        'apl_home_overview_title' => array(
+            'label'             => __('Overview Title', 'apl-theme'),
+            'default'           => 'A complete product overview',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_home_overview_body' => array(
+            'label'             => __('Overview Body', 'apl-theme'),
+            'default'           => 'Explore how every workflow, integration, and dashboard works together to support your team.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+        'apl_home_cap1_title' => array(
+            'label'             => __('Capability 1 Title', 'apl-theme'),
+            'default'           => 'Unified tasks',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_home_cap1_body' => array(
+            'label'             => __('Capability 1 Body', 'apl-theme'),
+            'default'           => 'Keep every deliverable organized, searchable, and up to date in one space.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+        'apl_home_cap2_title' => array(
+            'label'             => __('Capability 2 Title', 'apl-theme'),
+            'default'           => 'Automated reporting',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_home_cap2_body' => array(
+            'label'             => __('Capability 2 Body', 'apl-theme'),
+            'default'           => 'See progress at a glance with dashboards that refresh the moment work changes.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+        'apl_home_cap3_title' => array(
+            'label'             => __('Capability 3 Title', 'apl-theme'),
+            'default'           => 'Powerful collaboration',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_home_cap3_body' => array(
+            'label'             => __('Capability 3 Body', 'apl-theme'),
+            'default'           => 'Comment, assign, and approve without leaving the canvas or losing context.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+        'apl_home_cap4_title' => array(
+            'label'             => __('Capability 4 Title', 'apl-theme'),
+            'default'           => 'Enterprise-grade security',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_home_cap4_body' => array(
+            'label'             => __('Capability 4 Body', 'apl-theme'),
+            'default'           => 'Granular permissions and audit-ready logs keep sensitive work protected.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
         ),
     );
 
@@ -250,7 +310,7 @@ function apl_customize_register($wp_customize) {
 
         $control_args = array(
             'label'   => $args['label'],
-            'section' => 'apl_homepage_hero',
+            'section' => 'apl_home_cms',
             'settings'=> $setting_key,
         );
 
