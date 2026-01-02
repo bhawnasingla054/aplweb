@@ -56,6 +56,15 @@ function apl_theme_enqueue_assets() {
         $theme_version
     );
 
+    if (!is_front_page()) {
+        wp_enqueue_style(
+            'apl-blog-style',
+            get_template_directory_uri() . '/assets/css/blog.css',
+            array('apl-reference-style'),
+            $theme_version
+        );
+    }
+
     wp_enqueue_script(
         'apl-reference-script',
         get_template_directory_uri() . '/assets/js/reference.js',
@@ -65,6 +74,24 @@ function apl_theme_enqueue_assets() {
     );
 }
 add_action('wp_enqueue_scripts', 'apl_theme_enqueue_assets');
+
+/**
+ * Helper to fetch theme mods with a fallback value.
+ *
+ * @param string $key     Theme mod key.
+ * @param mixed  $default Default value if theme mod isn't set.
+ *
+ * @return mixed
+ */
+function apl_get_theme_mod($key, $default = '') {
+    $value = get_theme_mod($key, $default);
+
+    if ('' === $value || null === $value) {
+        return $default;
+    }
+
+    return $value;
+}
 
 if (!class_exists('APL_Primary_Nav_Walker')) {
     /**
@@ -158,3 +185,106 @@ function apl_theme_render_primary_menu() {
         )
     );
 }
+
+/**
+ * Registers Customizer settings for the homepage hero.
+ *
+ * @param WP_Customize_Manager $wp_customize Customize object.
+ */
+function apl_customize_register($wp_customize) {
+    $wp_customize->add_section(
+        'apl_homepage_hero',
+        array(
+            'title'    => __('Homepage Hero', 'apl-theme'),
+            'priority' => 30,
+        )
+    );
+
+    $settings = array(
+        'apl_hero_badge_label' => array(
+            'label'             => __('Badge Label', 'apl-theme'),
+            'default'           => 'NEW',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_hero_badge_text' => array(
+            'label'             => __('Badge Text', 'apl-theme'),
+            'default'           => 'Now with brand new AI integration',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_hero_heading' => array(
+            'label'             => __('Heading', 'apl-theme'),
+            'default'           => 'All your work pulled into one powerful place',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_hero_subheading' => array(
+            'label'             => __('Subheading', 'apl-theme'),
+            'default'           => 'Organize tasks and projects in one connected, accessible platform.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+        'apl_hero_cta_text' => array(
+            'label'             => __('CTA Text', 'apl-theme'),
+            'default'           => 'Get started',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'apl_hero_cta_url' => array(
+            'label'             => __('CTA URL', 'apl-theme'),
+            'default'           => '#',
+            'sanitize_callback' => 'esc_url_raw',
+            'type'              => 'url',
+        ),
+    );
+
+    foreach ($settings as $setting_key => $args) {
+        $wp_customize->add_setting(
+            $setting_key,
+            array(
+                'default'           => $args['default'],
+                'sanitize_callback' => $args['sanitize_callback'],
+            )
+        );
+
+        $control_args = array(
+            'label'   => $args['label'],
+            'section' => 'apl_homepage_hero',
+            'settings'=> $setting_key,
+        );
+
+        if ('textarea' === $args['type']) {
+            $wp_customize->add_control(
+                $setting_key,
+                array_merge(
+                    $control_args,
+                    array(
+                        'type' => 'textarea',
+                    )
+                )
+            );
+        } elseif ('url' === $args['type']) {
+            $wp_customize->add_control(
+                $setting_key,
+                array_merge(
+                    $control_args,
+                    array(
+                        'type' => 'url',
+                    )
+                )
+            );
+        } else {
+            $wp_customize->add_control(
+                $setting_key,
+                array_merge(
+                    $control_args,
+                    array(
+                        'type' => 'text',
+                    )
+                )
+            );
+        }
+    }
+}
+add_action('customize_register', 'apl_customize_register');

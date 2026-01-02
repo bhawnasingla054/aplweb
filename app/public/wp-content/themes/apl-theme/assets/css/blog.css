@@ -1,0 +1,131 @@
+.apl-blog {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 80px 24px;
+    color: var(--token-6d97c731-3cf6-459b-98f8-05bb844f5110, #0a0a0a);
+}
+
+.apl-blog__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.2;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.apl-blog__posts {
+    display: grid;
+    gap: 32px;
+}
+
+.apl-blog-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 24px 45px rgba(0, 0, 0, 0.05);
+}
+
+.apl-blog-card__image {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.apl-blog-card__image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.apl-blog-card__title {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.apl-blog-card__meta {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.apl-blog-card__excerpt {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.apl-blog-card__read-more {
+    font-weight: 600;
+    color: var(--token-4f620862-3ea1-44bf-81c3-5a50e949d20e, #ff6207);
+    text-decoration: none;
+}
+
+.apl-blog-card__read-more:hover,
+.apl-blog-card__read-more:focus {
+    text-decoration: underline;
+}
+
+.apl-blog-pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 48px;
+    font-weight: 600;
+}
+
+.apl-blog-pagination a {
+    color: var(--token-4f620862-3ea1-44bf-81c3-5a50e949d20e, #ff6207);
+    text-decoration: none;
+}
+
+.apl-blog-pagination a:hover,
+.apl-blog-pagination a:focus {
+    text-decoration: underline;
+}
+
+.apl-blog-single__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    color: var(--token-4f620862-3ea1-44bf-81c3-5a50e949d20e, #ff6207);
+    text-decoration: none;
+}
+
+.apl-blog-single__meta {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.apl-blog-single__featured {
+    margin: 32px 0;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.apl-blog-single__featured img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.apl-blog-single__content {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #333;
+}
+
+.apl-blog-single__terms {
+    margin-top: 32px;
+    font-size: 0.95rem;
+}
+
+.apl-blog-single__terms a {
+    color: var(--token-4f620862-3ea1-44bf-81c3-5a50e949d20e, #ff6207);
+}
+
+.apl-blog-empty {
+    text-align: center;
+    padding: 80px 24px;
+}

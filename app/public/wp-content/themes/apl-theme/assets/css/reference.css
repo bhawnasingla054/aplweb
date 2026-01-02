@@ -69,6 +69,8 @@ html {
 
 }
 
+
+
 #__framer-editorbar-container {
     align-items: center;
     display: flex;
@@ -185,3 +187,14 @@ html body { background: var(--token-bf4e24dd-ffae-4d1a-81c9-091bd92d97a7, rgb(24
                         // stroke: #000;
                         // stroke-width: 1px;
                     }
+
+.custom-logo-link {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    text-decoration: none;
+}
+.custom-logo {
+    max-height: 100%;
+    width: auto;
+}
