@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+
+# LocalWP generated / machine-specific
+logs/
+conf/
+.env
+
+# WordPress core (massive + replaceable)
+app/public/wp-admin/
+app/public/wp-includes/
+
+# Uploads (user media; can be huge)
+app/public/wp-content/uploads/
+
+# Cache & logs
+*.log
+
+# If you ever add node tooling
+node_modules/
+
+
