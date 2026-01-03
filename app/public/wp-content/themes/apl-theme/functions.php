@@ -112,6 +112,152 @@ function apl_get_media_url($key) {
     return $url ? $url : '';
 }
 
+/**
+ * Helper to decode stored JSON repeater lists.
+ *
+ * @param string $value JSON string from get_theme_mod.
+ *
+ * @return array
+ */
+function apl_decode_repeater_json($value) {
+    if (empty($value)) {
+        return array();
+    }
+
+    $decoded = json_decode($value, true);
+
+    return is_array($decoded) ? $decoded : array();
+}
+
+/**
+ * Fetch a decoded repeater list directly from a theme mod key.
+ *
+ * @param string $key Theme mod key.
+ *
+ * @return array
+ */
+function apl_get_repeater_items($key) {
+    $raw = get_theme_mod($key, '');
+
+    return apl_decode_repeater_json($raw);
+}
+
+/**
+ * Sanitize sponsor JSON payloads from the Customizer.
+ *
+ * @param string $value Raw JSON string.
+ *
+ * @return string
+ */
+function apl_sanitize_sponsors_json($value) {
+    if (empty($value)) {
+        return '';
+    }
+
+    $items = apl_decode_repeater_json($value);
+
+    if (empty($items)) {
+        return '';
+    }
+
+    $sanitized = array();
+
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+
+        $clean = array();
+
+        if (isset($item['id'])) {
+            $clean_id = absint($item['id']);
+            if ($clean_id) {
+                $clean['id'] = $clean_id;
+            }
+        }
+
+        if (!empty($item['src'])) {
+            $clean_src = esc_url_raw($item['src']);
+            if ($clean_src) {
+                $clean['src'] = $clean_src;
+            }
+        }
+
+        if (!empty($item['url'])) {
+            $clean_url = esc_url_raw($item['url']);
+            if ($clean_url) {
+                $clean['url'] = $clean_url;
+            }
+        }
+
+        if (!empty($clean)) {
+            $sanitized[] = $clean;
+        }
+    }
+
+    return !empty($sanitized) ? wp_json_encode($sanitized) : '';
+}
+
+/**
+ * Sanitize recognition JSON payloads from the Customizer.
+ *
+ * @param string $value Raw JSON string.
+ *
+ * @return string
+ */
+function apl_sanitize_recognition_json($value) {
+    if (empty($value)) {
+        return '';
+    }
+
+    $items = apl_decode_repeater_json($value);
+
+    if (empty($items)) {
+        return '';
+    }
+
+    $sanitized = array();
+
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+
+        $clean = array();
+
+        if (isset($item['id'])) {
+            $clean_id = absint($item['id']);
+            if ($clean_id) {
+                $clean['id'] = $clean_id;
+            }
+        }
+
+        if (!empty($item['src'])) {
+            $clean_src = esc_url_raw($item['src']);
+            if ($clean_src) {
+                $clean['src'] = $clean_src;
+            }
+        }
+
+        if (!empty($item['url'])) {
+            $clean_url = esc_url_raw($item['url']);
+            if ($clean_url) {
+                $clean['url'] = $clean_url;
+            }
+        }
+
+        if (!empty($item['caption'])) {
+            $clean['caption'] = sanitize_text_field($item['caption']);
+        }
+
+        if (!empty($clean)) {
+            $sanitized[] = $clean;
+        }
+    }
+
+    return !empty($sanitized) ? wp_json_encode($sanitized) : '';
+}
+
 if (!class_exists('APL_Primary_Nav_Walker')) {
     /**
      * Custom walker used to mirror the original Framer navigation markup.
@@ -341,7 +487,7 @@ function apl_customize_register($wp_customize) {
         );
     }
 
-    for ($i = 1; $i <= 2; $i++) {
+    for ($i = 1; $i <= 3; $i++) {
         $settings["apl_home_rec{$i}_url"] = array(
             'label'             => sprintf(__('Recognition %d: Link', 'apl-theme'), $i),
             'default'           => '',
@@ -372,6 +518,20 @@ function apl_customize_register($wp_customize) {
             'type'              => 'textarea',
         );
     }
+
+    $settings['apl_home_sponsors_json'] = array(
+        'label'             => __('Sponsors JSON (override)', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'apl_sanitize_sponsors_json',
+        'type'              => 'textarea',
+    );
+
+    $settings['apl_home_recognition_json'] = array(
+        'label'             => __('Recognition JSON (override)', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'apl_sanitize_recognition_json',
+        'type'              => 'textarea',
+    );
 
     foreach ($settings as $setting_key => $args) {
         $wp_customize->add_setting(
@@ -446,7 +606,7 @@ function apl_customize_register($wp_customize) {
         );
     }
 
-    for ($i = 1; $i <= 2; $i++) {
+    for ($i = 1; $i <= 3; $i++) {
         $setting_id = "apl_home_rec{$i}_img";
 
         $wp_customize->add_setting(
