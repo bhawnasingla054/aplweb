@@ -93,6 +93,25 @@ function apl_get_theme_mod($key, $default = '') {
     return $value;
 }
 
+/**
+ * Helper to fetch the URL of a media attachment stored in a theme mod.
+ *
+ * @param string $key Theme mod key storing an attachment ID.
+ *
+ * @return string
+ */
+function apl_get_media_url($key) {
+    $attachment_id = absint(get_theme_mod($key));
+
+    if (!$attachment_id) {
+        return '';
+    }
+
+    $url = wp_get_attachment_image_url($attachment_id, 'full');
+
+    return $url ? $url : '';
+}
+
 if (!class_exists('APL_Primary_Nav_Walker')) {
     /**
      * Custom walker used to mirror the original Framer navigation markup.
@@ -299,6 +318,61 @@ function apl_customize_register($wp_customize) {
         ),
     );
 
+    $settings['apl_home_cred_title'] = array(
+        'label'             => __('Credibility: Title', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+        'type'              => 'text',
+    );
+
+    $settings['apl_home_cred_subtitle'] = array(
+        'label'             => __('Credibility: Subtitle', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_textarea_field',
+        'type'              => 'textarea',
+    );
+
+    for ($i = 1; $i <= 4; $i++) {
+        $settings["apl_home_sponsor{$i}_url"] = array(
+            'label'             => sprintf(__('Sponsor %d: Link', 'apl-theme'), $i),
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+            'type'              => 'url',
+        );
+    }
+
+    for ($i = 1; $i <= 2; $i++) {
+        $settings["apl_home_rec{$i}_url"] = array(
+            'label'             => sprintf(__('Recognition %d: Link', 'apl-theme'), $i),
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+            'type'              => 'url',
+        );
+
+        $settings["apl_home_rec{$i}_caption"] = array(
+            'label'             => sprintf(__('Recognition %d: Caption', 'apl-theme'), $i),
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        );
+    }
+
+    for ($i = 1; $i <= 4; $i++) {
+        $settings["apl_home_opt{$i}_title"] = array(
+            'label'             => sprintf(__('Optional Card %d: Title', 'apl-theme'), $i),
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        );
+
+        $settings["apl_home_opt{$i}_body"] = array(
+            'label'             => sprintf(__('Optional Card %d: Body', 'apl-theme'), $i),
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        );
+    }
+
     foreach ($settings as $setting_key => $args) {
         $wp_customize->add_setting(
             $setting_key,
@@ -345,6 +419,54 @@ function apl_customize_register($wp_customize) {
                 )
             );
         }
+    }
+
+    $media_control_class = class_exists('WP_Customize_Media_Control') ? 'WP_Customize_Media_Control' : 'WP_Customize_Image_Control';
+
+    for ($i = 1; $i <= 4; $i++) {
+        $setting_id = "apl_home_sponsor{$i}_img";
+
+        $wp_customize->add_setting(
+            $setting_id,
+            array(
+                'sanitize_callback' => 'absint',
+            )
+        );
+
+        $wp_customize->add_control(
+            new $media_control_class(
+                $wp_customize,
+                $setting_id,
+                array(
+                    'label'     => sprintf(__('Sponsor %d: Logo', 'apl-theme'), $i),
+                    'section'   => 'apl_home_cms',
+                    'mime_type' => 'image',
+                )
+            )
+        );
+    }
+
+    for ($i = 1; $i <= 2; $i++) {
+        $setting_id = "apl_home_rec{$i}_img";
+
+        $wp_customize->add_setting(
+            $setting_id,
+            array(
+                'sanitize_callback' => 'absint',
+            )
+        );
+
+        $wp_customize->add_control(
+            new $media_control_class(
+                $wp_customize,
+                $setting_id,
+                array(
+                    'label'     => sprintf(__('Recognition %d: Image', 'apl-theme'), $i),
+                    'section'   => 'apl_home_cms',
+                    'mime_type' => 'image',
+                )
+            )
+        );
     }
 }
 add_action('customize_register', 'apl_customize_register');
