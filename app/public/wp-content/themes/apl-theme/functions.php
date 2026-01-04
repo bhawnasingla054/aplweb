@@ -49,6 +49,7 @@ add_action('after_setup_theme', 'apl_theme_setup');
 function apl_theme_enqueue_assets() {
     $theme_version = wp_get_theme()->get('Version');
 
+    // Load reference.css (base styles)
     wp_enqueue_style(
         'apl-reference-style',
         get_template_directory_uri() . '/assets/css/reference.css',
@@ -65,14 +66,32 @@ function apl_theme_enqueue_assets() {
         );
     }
 
+    // Enqueue blog styles on all non-front pages
+    // Load with dependency on reference.css but AFTER it with higher priority
     if (!is_front_page()) {
         wp_enqueue_style(
             'apl-blog-style',
             get_template_directory_uri() . '/assets/css/blog.css',
-            array('apl-reference-style'),
-            $theme_version
+            array(), // Remove dependency to load independently
+            $theme_version . '-' . time(), // Force reload
+            'all'
         );
+
+        // Add inline style to increase specificity
+        $custom_css = "
+            .apl-blog-archive { display: block !important; }
+        ";
+        wp_add_inline_style('apl-blog-style', $custom_css);
     }
+
+    // Enqueue footer styles on all pages
+    wp_enqueue_style(
+        'apl-footer-style',
+        get_template_directory_uri() . '/assets/css/footer.css',
+        array(),
+        $theme_version,
+        'all'
+    );
 
     wp_enqueue_script(
         'apl-reference-script',
@@ -1259,8 +1278,194 @@ function apl_customize_register($wp_customize) {
             'team'     => __('Team', 'apl-theme'),
         ),
     ));
+
+    // ========================================
+    // SECTION: Blog Settings
+    // ========================================
+    $wp_customize->add_section('apl_blog_settings', array(
+        'title'    => __('Blog Settings', 'apl-theme'),
+        'priority' => 50,
+    ));
+
+    // Blog Archive Title
+    $wp_customize->add_setting('apl_blog_archive_title', array(
+        'default'           => 'Updates',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_blog_archive_title', array(
+        'label'   => __('Blog Archive Title', 'apl-theme'),
+        'section' => 'apl_blog_settings',
+        'type'    => 'text',
+    ));
+
+    // Blog Archive Subtitle
+    $wp_customize->add_setting('apl_blog_archive_subtitle', array(
+        'default'           => 'Stay informed with the latest news and insights.',
+        'sanitize_callback' => 'sanitize_textarea_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_blog_archive_subtitle', array(
+        'label'   => __('Blog Archive Subtitle', 'apl-theme'),
+        'section' => 'apl_blog_settings',
+        'type'    => 'textarea',
+    ));
+
+    // Show Categories Filter
+    $wp_customize->add_setting('apl_blog_show_categories', array(
+        'default'           => true,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_blog_show_categories', array(
+        'label'   => __('Show Category Filter', 'apl-theme'),
+        'section' => 'apl_blog_settings',
+        'type'    => 'checkbox',
+    ));
+
+    // Posts Per Page
+    $wp_customize->add_setting('apl_blog_posts_per_page', array(
+        'default'           => get_option('posts_per_page', 10),
+        'sanitize_callback' => 'absint',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_blog_posts_per_page', array(
+        'label'       => __('Posts Per Page', 'apl-theme'),
+        'description' => __('Number of blog posts to show per page', 'apl-theme'),
+        'section'     => 'apl_blog_settings',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 1,
+            'max'  => 50,
+            'step' => 1,
+        ),
+    ));
+
+    // ========================================
+    // SECTION: Footer Settings
+    // ========================================
+    $wp_customize->add_section('apl_footer_settings', array(
+        'title'    => __('Footer Settings', 'apl-theme'),
+        'priority' => 60,
+    ));
+
+    // Company Name
+    $wp_customize->add_setting('apl_footer_company_name', array(
+        'default'           => 'Accretion',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_company_name', array(
+        'label'   => __('Company Name', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'text',
+    ));
+
+    // Company Tagline
+    $wp_customize->add_setting('apl_footer_tagline', array(
+        'default'           => 'Empowering innovation through intelligent solutions',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_tagline', array(
+        'label'   => __('Tagline', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'text',
+    ));
+
+    // Social Links
+    $wp_customize->add_setting('apl_footer_twitter', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_twitter', array(
+        'label'   => __('Twitter URL', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'url',
+    ));
+
+    $wp_customize->add_setting('apl_footer_linkedin', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_linkedin', array(
+        'label'   => __('LinkedIn URL', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'url',
+    ));
+
+    $wp_customize->add_setting('apl_footer_github', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_github', array(
+        'label'   => __('GitHub URL', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'url',
+    ));
+
+    $wp_customize->add_setting('apl_footer_instagram', array(
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_instagram', array(
+        'label'   => __('Instagram URL', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'url',
+    ));
+
+    // Copyright Text
+    $wp_customize->add_setting('apl_footer_copyright', array(
+        'default'           => '© 2025 Accretion. All rights reserved.',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_copyright', array(
+        'label'   => __('Copyright Text', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'text',
+    ));
+
+    // Built With Text
+    $wp_customize->add_setting('apl_footer_built_text', array(
+        'default'           => 'Built with WordPress',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_built_text', array(
+        'label'   => __('Built With Text', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'text',
+    ));
+
+    // Built With URL
+    $wp_customize->add_setting('apl_footer_built_url', array(
+        'default'           => 'https://wordpress.org',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_footer_built_url', array(
+        'label'   => __('Built With URL', 'apl-theme'),
+        'section' => 'apl_footer_settings',
+        'type'    => 'url',
+    ));
 }
 add_action('customize_register', 'apl_customize_register');
+
+/**
+ * Apply custom posts per page for blog archives.
+ */
+function apl_blog_posts_per_page($query) {
+    if (!is_admin() && $query->is_main_query() && (is_home() || is_archive())) {
+        $posts_per_page = apl_get_theme_mod('apl_blog_posts_per_page', get_option('posts_per_page', 10));
+        $query->set('posts_per_page', absint($posts_per_page));
+    }
+}
+add_action('pre_get_posts', 'apl_blog_posts_per_page');
 
 /**
  * Handle demo form submissions.

@@ -1,0 +1,191 @@
+/**
+ * Footer Styles - Dreelio-inspired design with glassy container effect
+ * CMS-controlled footer with clean, modern aesthetic
+ */
+
+.apl-footer {
+    background: #000;
+    color: #fff;
+    padding: 80px 20px 40px;
+    margin-top: 100px;
+}
+
+.apl-footer__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 60px 50px 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Top Section - Logo, Tagline, Social + Navigation */
+.apl-footer__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Company Section */
+.apl-footer__company {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 0 0 auto;
+}
+
+.apl-footer__logo {
+    margin-bottom: 0;
+}
+
+.apl-footer__logo img {
+    height: 40px;
+    width: auto;
+}
+
+.apl-footer__company-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin: 8px 0 0 0;
+    font-family: 'Switzer', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.apl-footer__logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.apl-footer__logo-icon {
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    border-radius: 6px;
+}
+
+.apl-footer__logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Switzer', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.apl-footer__tagline {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    max-width: 300px;
+}
+
+/* Social Links */
+.apl-footer__social {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.apl-footer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.apl-footer__social-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.apl-footer__social-link svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Navigation Container */
+.apl-footer__nav-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.apl-footer__nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 16px 40px;
+    align-content: start;
+}
+
+.apl-footer__link {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.apl-footer__link:hover {
+    color: #fff;
+}
+
+/* Bottom Section - Copyright Only */
+.apl-footer__bottom {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.apl-footer__copyright {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    .apl-footer__top {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .apl-footer__nav {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .apl-footer {
+        padding: 60px 20px 30px;
+        margin-top: 60px;
+    }
+
+    .apl-footer__top {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .apl-footer__nav {
+        grid-template-columns: 1fr;
+    }
+
+    .apl-footer__tagline {
+        max-width: 100%;
+    }
+}
