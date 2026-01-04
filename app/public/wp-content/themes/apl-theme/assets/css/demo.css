@@ -1,0 +1,332 @@
+section.framer-1o7n7qi[data-framer-name="Media"] #howitworks {
+  background: transparent;
+}
+
+section.framer-1o7n7qi.apl-demo-off {
+  display: none !important;
+}
+
+.apl-demo {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  /* padding: clamp(2rem, 4vw, 4rem) clamp(1.5rem, 4vw, 3rem);*/
+  background: transparent;
+  color: #fff;
+}
+
+.apl-demo__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.4fr) minmax(0, 0.6fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+/*  padding: clamp(1.5rem, 3vw, 3rem);*/
+  width: 100%;
+  margin: 0;
+  align-items: stretch;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+}
+
+.apl-demo__left,
+.apl-demo__right {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .apl-demo__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+.apl-demo__left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.95rem;
+  padding-block: 0.5rem;
+}
+
+.apl-demo__left h2 {
+  font-size: clamp(1.6rem, 3vw, 2.15rem);
+  margin: 0;
+  color: #fff;
+}
+
+.apl-demo__subtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.apl-demo__form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 1.25rem;
+}
+
+.apl-demo__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.apl-demo__field--full {
+  grid-column: 1 / -1;
+}
+
+.apl-demo__field label {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.apl-demo__field input,
+.apl-demo__field textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(13, 16, 25, 0.65);
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.apl-demo__field input:focus,
+.apl-demo__field textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.apl-demo__field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.apl-demo__actions {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+.apl-demo__submit {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #ff7a18, #af002d 71%);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.apl-demo__submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(175, 0, 45, 0.28);
+}
+
+.apl-demo__notice {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.apl-demo__notice--success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86f2c1;
+}
+
+.apl-demo__notice--error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ffb4b4;
+}
+
+.apl-demo__right {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: clamp(520px, 65vh, 620px);
+  gap: 1.25rem;
+}
+
+.apl-demo__right--empty {
+  min-height: 260px;
+  justify-content: center;
+  align-items: center;
+}
+
+.apl-demo-carousel__heading {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.75);
+}
+
+.apl-demo__carousel {
+  position: relative;
+  flex: 1;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: clamp(0.75rem, 1.5vw, 1.25rem);
+  background: rgba(3, 4, 8, 0.65);
+  overflow: hidden;
+}
+
+.apl-demo__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.apl-demo__card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(420px, 100%);
+  max-width: 420px;
+  padding: clamp(0.85rem, 2vw, 1.2rem);
+  min-height: 520px;
+  transform-origin: center;
+  border-radius: 26px;
+  background: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 25px 55px rgba(3, 3, 3, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.68);
+  transition: opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease;
+  pointer-events: none;
+  color: #050505;
+}
+
+.apl-demo__card-media {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.apl-demo__card-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 0;
+  object-fit: cover;
+  background: transparent;
+  border: 0;
+}
+
+.apl-demo__card-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.apl-demo__card-copy h3 {
+  margin: 0 0 0.35em;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #050505;
+}
+
+.apl-demo__card-copy p {
+  margin: 0;
+  color: rgba(12, 12, 12, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.apl-demo__card--text {
+  padding: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.apl-demo__card.is-active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 3;
+  filter: none;
+  pointer-events: auto;
+}
+
+.apl-demo__card.is-prev {
+  opacity: 0.45;
+  transform: translate(-105%, -50%) scale(0.75);
+  z-index: 2;
+  filter: saturate(0.95);
+}
+
+.apl-demo__card.is-next {
+  opacity: 0.45;
+  transform: translate(5%, -50%) scale(0.75);
+  z-index: 2;
+  filter: saturate(0.95);
+}
+
+.apl-demo__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.apl-demo__arrow span {
+  line-height: 1;
+}
+
+.apl-demo__arrow--prev {
+  left: 0;
+}
+
+.apl-demo__arrow--next {
+  right: 0;
+}
+
+.apl-demo__arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.apl-demo__carousel-placeholder {
+  width: 100%;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .apl-demo__form {
+    grid-template-columns: 1fr;
+  }
+}

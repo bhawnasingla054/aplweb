@@ -56,6 +56,15 @@ function apl_theme_enqueue_assets() {
         $theme_version
     );
 
+    if (is_front_page()) {
+        wp_enqueue_style(
+            'apl-demo-style',
+            get_template_directory_uri() . '/assets/css/demo.css',
+            array('apl-reference-style'),
+            $theme_version
+        );
+    }
+
     if (!is_front_page()) {
         wp_enqueue_style(
             'apl-blog-style',
@@ -410,6 +419,17 @@ function apl_sanitize_recognition_json($value) {
 }
 
 /**
+ * Sanitize checkbox values.
+ *
+ * @param mixed $value Input value.
+ *
+ * @return bool
+ */
+function apl_sanitize_checkbox($value) {
+    return (bool) $value;
+}
+
+/**
  * Sanitize media type selection.
  *
  * @param string $value Raw selection.
@@ -588,6 +608,14 @@ function apl_customize_register($wp_customize) {
         array(
             'title'    => __('Home (CMS)', 'apl-theme'),
             'priority' => 30,
+        )
+    );
+
+    $wp_customize->add_section(
+        'apl_home_demo',
+        array(
+            'title'    => __('Homepage – Demo', 'apl-theme'),
+            'priority' => 35,
         )
     );
 
@@ -954,6 +982,237 @@ function apl_customize_register($wp_customize) {
     }
 
     // ========================================
+    // SECTION: Homepage – Demo
+    // ========================================
+    $wp_customize->add_setting(
+        'apl_demo_enabled',
+        array(
+            'default'           => true,
+            'sanitize_callback' => 'apl_sanitize_checkbox',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_enabled',
+        array(
+            'label'   => __('Enable Demo Section', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'checkbox',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_title',
+        array(
+            'default'           => 'Book a Demo',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_title',
+        array(
+            'label'   => __('Demo Title', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'text',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_subtitle',
+        array(
+            'default'           => 'Tell us what interests you and we’ll arrange a personalized demo.',
+            'sanitize_callback' => 'sanitize_textarea_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_subtitle',
+        array(
+            'label'   => __('Demo Subtitle', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'textarea',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_recipient_email',
+        array(
+            'default'           => get_option('admin_email'),
+            'sanitize_callback' => 'sanitize_email',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_recipient_email',
+        array(
+            'label'   => __('Recipient Email', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'email',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_subject',
+        array(
+            'default'           => 'Request for Demo: SAiGE',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_subject',
+        array(
+            'label'   => __('Email Subject', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'text',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_button_label',
+        array(
+            'default'           => 'Send Request',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_button_label',
+        array(
+            'label'   => __('Button Label', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'text',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_success_message',
+        array(
+            'default'           => 'Thanks — we’ll reach out shortly.',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_success_message',
+        array(
+            'label'   => __('Success Message', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'text',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_error_message',
+        array(
+            'default'           => 'Please fill required fields and try again.',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_error_message',
+        array(
+            'label'   => __('Error Message', 'apl-theme'),
+            'section' => 'apl_home_demo',
+            'type'    => 'text',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_media',
+        array(
+            'sanitize_callback' => 'absint',
+        )
+    );
+
+    $wp_customize->add_control(
+        new $media_control_class(
+            $wp_customize,
+            'apl_demo_media',
+            array(
+                'label'     => __('Demo Media', 'apl-theme'),
+                'section'   => 'apl_home_demo',
+                'mime_type' => 'image',
+            )
+        )
+    );
+
+    $wp_customize->add_setting(
+        'apl_demo_carousel_heading',
+        array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'apl_demo_carousel_heading',
+        array(
+            'label'       => __('Carousel Heading', 'apl-theme'),
+            'description' => __('Optional. Leave blank to hide the heading above the demo carousel.', 'apl-theme'),
+            'section'     => 'apl_home_demo',
+            'type'        => 'text',
+        )
+    );
+
+    for ($i = 1; $i <= 4; $i++) {
+        $wp_customize->add_setting(
+            "apl_demo_slide{$i}_title",
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_text_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            "apl_demo_slide{$i}_title",
+            array(
+                'label'   => sprintf(__('Slide %d Title', 'apl-theme'), $i),
+                'section' => 'apl_home_demo',
+                'type'    => 'text',
+            )
+        );
+
+        $wp_customize->add_setting(
+            "apl_demo_slide{$i}_body",
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_textarea_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            "apl_demo_slide{$i}_body",
+            array(
+                'label'   => sprintf(__('Slide %d Description', 'apl-theme'), $i),
+                'section' => 'apl_home_demo',
+                'type'    => 'textarea',
+            )
+        );
+
+        $wp_customize->add_setting(
+            "apl_demo_slide{$i}_image",
+            array(
+                'sanitize_callback' => 'absint',
+            )
+        );
+
+        $wp_customize->add_control(
+            new $media_control_class(
+                $wp_customize,
+                "apl_demo_slide{$i}_image",
+                array(
+                    'label'     => sprintf(__('Slide %d Image', 'apl-theme'), $i),
+                    'section'   => 'apl_home_demo',
+                    'mime_type' => 'image',
+                )
+            )
+        );
+    }
+
+    // ========================================
     // SECTION: Homepage – People (Team/Advisors)
     // ========================================
     $wp_customize->add_section('apl_people_section', array(
@@ -1002,3 +1261,69 @@ function apl_customize_register($wp_customize) {
     ));
 }
 add_action('customize_register', 'apl_customize_register');
+
+/**
+ * Handle demo form submissions.
+ */
+function apl_handle_demo_request() {
+    $error_redirect = home_url('/?demo=error#demo');
+
+    if (!isset($_POST['apl_demo_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['apl_demo_nonce'])), 'apl_demo_request')) {
+        wp_safe_redirect($error_redirect);
+        exit;
+    }
+
+    $name    = isset($_POST['demo_name']) ? sanitize_text_field(wp_unslash($_POST['demo_name'])) : '';
+    $email   = isset($_POST['demo_email']) ? sanitize_email(wp_unslash($_POST['demo_email'])) : '';
+    $company = isset($_POST['demo_company']) ? sanitize_text_field(wp_unslash($_POST['demo_company'])) : '';
+    $role    = isset($_POST['demo_role']) ? sanitize_text_field(wp_unslash($_POST['demo_role'])) : '';
+    $message = isset($_POST['demo_message']) ? sanitize_textarea_field(wp_unslash($_POST['demo_message'])) : '';
+
+    if (empty($name) || empty($email) || !is_email($email)) {
+        wp_safe_redirect($error_redirect);
+        exit;
+    }
+
+    $recipient = apl_get_theme_mod('apl_demo_recipient_email', get_option('admin_email'));
+    $recipient = sanitize_email($recipient);
+    if (empty($recipient) || !is_email($recipient)) {
+        $recipient = get_option('admin_email');
+    }
+
+    $subject_base = apl_get_theme_mod('apl_demo_subject', 'Request for Demo: SAiGE');
+    $subject_base = sanitize_text_field($subject_base);
+    $subject      = $subject_base;
+
+    if (!empty($name)) {
+        $subject .= ' — ' . $name;
+        if (!empty($company)) {
+            $subject .= ' (' . $company . ')';
+        }
+    }
+
+    $body_lines = array(
+        'Demo request received from ' . get_bloginfo('name'),
+        '',
+        'Name: ' . $name,
+        'Email: ' . $email,
+        'Company: ' . $company,
+        'Role: ' . $role,
+        'Message:',
+        $message,
+        '',
+        'Site: ' . home_url('/'),
+        'Time: ' . current_time('mysql'),
+    );
+
+    $headers = array();
+    if (!empty($email) && !empty($name)) {
+        $headers[] = 'Reply-To: ' . sprintf('%s <%s>', $name, $email);
+    }
+
+    wp_mail($recipient, $subject, implode("\n", $body_lines), $headers);
+
+    wp_safe_redirect(home_url('/?demo=sent#demo'));
+    exit;
+}
+add_action('admin_post_nopriv_apl_demo_request', 'apl_handle_demo_request');
+add_action('admin_post_apl_demo_request', 'apl_handle_demo_request');
