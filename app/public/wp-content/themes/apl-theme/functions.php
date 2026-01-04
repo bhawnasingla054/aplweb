@@ -258,6 +258,81 @@ function apl_sanitize_recognition_json($value) {
     return !empty($sanitized) ? wp_json_encode($sanitized) : '';
 }
 
+/**
+ * Sanitize media type selection.
+ *
+ * @param string $value Raw selection.
+ *
+ * @return string
+ */
+function apl_sanitize_media_type($value) {
+    $allowed = array('image', 'video');
+
+    return in_array($value, $allowed, true) ? $value : 'image';
+}
+
+/**
+ * Sanitize customer logos JSON payload.
+ *
+ * @param string $value Raw JSON string.
+ *
+ * @return string
+ */
+function apl_sanitize_customers_json($value) {
+    if (empty($value)) {
+        return '';
+    }
+
+    $items = apl_decode_repeater_json($value);
+
+    if (empty($items)) {
+        return '';
+    }
+
+    $sanitized = array();
+
+    foreach ($items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+
+        $clean = array();
+
+        if (isset($item['id'])) {
+            $clean_id = absint($item['id']);
+            if ($clean_id) {
+                $clean['id'] = $clean_id;
+            }
+        }
+
+        if (!empty($item['src'])) {
+            $clean_src = esc_url_raw($item['src']);
+            if ($clean_src) {
+                $clean['src'] = $clean_src;
+            }
+        }
+
+        if (empty($clean['id']) && empty($clean['src'])) {
+            continue;
+        }
+
+        if (!empty($item['href'])) {
+            $clean_href = esc_url_raw($item['href']);
+            if ($clean_href) {
+                $clean['href'] = $clean_href;
+            }
+        }
+
+        if (!empty($item['alt'])) {
+            $clean['alt'] = sanitize_text_field($item['alt']);
+        }
+
+        $sanitized[] = $clean;
+    }
+
+    return !empty($sanitized) ? wp_json_encode($sanitized) : '';
+}
+
 if (!class_exists('APL_Primary_Nav_Walker')) {
     /**
      * Custom walker used to mirror the original Framer navigation markup.
@@ -533,6 +608,79 @@ function apl_customize_register($wp_customize) {
         'type'              => 'textarea',
     );
 
+    $settings['apl_home_product_media_type'] = array(
+        'label'             => __('Product Media Type', 'apl-theme'),
+        'default'           => 'image',
+        'sanitize_callback' => 'apl_sanitize_media_type',
+        'type'              => 'select',
+        'choices'           => array(
+            'image' => __('Image', 'apl-theme'),
+            'video' => __('Video', 'apl-theme'),
+        ),
+    );
+
+    // Media Upload Controls (NEW)
+    $settings['apl_home_product_image_id'] = array(
+        'label'             => __('Product Image Upload', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'absint',
+        'type'              => 'media',
+        'mime_type'         => 'image',
+    );
+
+    $settings['apl_home_product_video_id'] = array(
+        'label'             => __('Product Video Upload', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'absint',
+        'type'              => 'media',
+        'mime_type'         => 'video',
+    );
+
+    $settings['apl_home_product_media_url'] = array(
+        'label'             => __('External Media URL (fallback)', 'apl-theme'),
+        'description'       => __('Used only if no upload is selected above', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+        'type'              => 'url',
+    );
+
+    $settings['apl_home_product_media_alt'] = array(
+        'label'             => __('Product Image Alt Text', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+        'type'              => 'text',
+    );
+
+    $settings['apl_home_product_poster_id'] = array(
+        'label'             => __('Video Poster Image Upload', 'apl-theme'),
+        'description'       => __('Thumbnail shown before video plays', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'absint',
+        'type'              => 'media',
+        'mime_type'         => 'image',
+    );
+
+    $settings['apl_home_trusted_title'] = array(
+        'label'             => __('Trusted Block Title', 'apl-theme'),
+        'default'           => 'Trusted by teams everywhere',
+        'sanitize_callback' => 'sanitize_text_field',
+        'type'              => 'text',
+    );
+
+    $settings['apl_home_trusted_subtitle'] = array(
+        'label'             => __('Trusted Block Subtitle', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+        'type'              => 'text',
+    );
+
+    $settings['apl_home_customers_json'] = array(
+        'label'             => __('Customer Logos JSON', 'apl-theme'),
+        'default'           => '',
+        'sanitize_callback' => 'apl_sanitize_customers_json',
+        'type'              => 'textarea',
+    );
+
     foreach ($settings as $setting_key => $args) {
         $wp_customize->add_setting(
             $setting_key,
@@ -565,6 +713,31 @@ function apl_customize_register($wp_customize) {
                     $control_args,
                     array(
                         'type' => 'url',
+                    )
+                )
+            );
+        } elseif ('select' === $args['type']) {
+            $wp_customize->add_control(
+                $setting_key,
+                array_merge(
+                    $control_args,
+                    array(
+                        'type'    => 'select',
+                        'choices' => isset($args['choices']) ? $args['choices'] : array(),
+                    )
+                )
+            );
+        } elseif ('media' === $args['type']) {
+            $wp_customize->add_control(
+                new WP_Customize_Media_Control(
+                    $wp_customize,
+                    $setting_key,
+                    array_merge(
+                        $control_args,
+                        array(
+                            'mime_type' => isset($args['mime_type']) ? $args['mime_type'] : 'image',
+                            'description' => isset($args['description']) ? $args['description'] : '',
+                        )
                     )
                 )
             );

@@ -1,0 +1,78 @@
+JSON question: where is it, is it a file?
+
+It’s not a file in your theme folder.
+
+It’s a Customizer field stored in WordPress database.
+
+Where to edit it
+
+WP Admin → Appearance → Customize → Home (CMS)
+Look for:
+
+Sponsors (JSON list) (or similar label)
+
+Recognition (JSON list)
+
+That’s where you paste the JSON.
+
+How to add “more”
+
+Just paste more items into that JSON list. No coding, no folder edits.
+
+Example (Sponsors JSON list):
+
+[
+  {"src":"https://apl.local/wp-content/uploads/2026/01/logo1.png","url":"https://example.com"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/logo2.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/logo3.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/logo4.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/logo5.png"}
+]
+
+
+To get the image URL easily:
+
+WP Admin → Media → Library
+
+Click image → copy the File URL
+
+Note:
+
+Sponsors JSON (example)
+
+[
+  {"src":"https://apl.local/wp-content/uploads/2026/01/schulich.png","url":"https://schulich.yorku.ca"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/yspace.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/venturelab.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/altitude.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/irapp.png"}
+]
+
+
+
+{"src":"https://apl.local/wp-content/uploads/2026/01/New-logo-1.png"}
+
+Recognition JSON (example)
+
+[
+  {"src":"https://apl.local/wp-content/uploads/2026/01/prize1.jpg","caption":"Schulich Startups Prize"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/prize2.jpg","caption":"YSpace Recognition"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/conference.jpg","caption":"Conference Showcase"}
+]
+
+Note: http or https -- this has to be right. 
+[
+  {"src":"https://apl.local/wp-content/uploads/2026/01/New-logo-1.png","url":"https://schulich.yorku.ca"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/AI-Product-Labs.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/New-logo-1.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/AI-Product-Labs.png"},
+  {"src":"https://apl.local/wp-content/uploads/2026/01/New-logo-1.png"}
+]
+
+[
+  {"src":"http://apl.local/wp-content/uploads/2026/01/New-logo-1.png","url":"https://schulich.yorku.ca"},
+  {"src":"http://apl.local/wp-content/uploads/2026/01/AI-Product-Labs.png"},
+  {"src":"http://apl.local/wp-content/uploads/2026/01/New-logo-1.png"},
+  {"src":"http://apl.local/wp-content/uploads/2026/01/AI-Product-Labs.png"},
+  {"src":"http://apl.local/wp-content/uploads/2026/01/New-logo-1.png"}
+]
