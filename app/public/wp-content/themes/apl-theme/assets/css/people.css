@@ -1,0 +1,270 @@
+/**
+ * People Section (Team/Advisors) Styles
+ * Scoped to .apl-people only
+ * Dark theme with rectangular avatars and orange accent
+ */
+
+.apl-people {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+    background-color: #0a0a0a; /* Dark background */
+}
+
+.apl-people__container {
+    width: 100%;
+}
+
+/* Title */
+.apl-people__title {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+/* Subtitle */
+.apl-people__subtitle {
+    font-size: 1.125rem;
+    text-align: left;
+    margin-bottom: 3rem;
+    color: #a0a0a0;
+}
+
+/* Pills/Tabs - LEFT ALIGNED with orange design - COMPACT */
+.apl-people__pills {
+    display: inline-flex;
+    justify-content: flex-start;
+    gap: 0;
+    margin-bottom: 3rem;
+    background: rgba(245, 244, 243, 0.1);
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid rgba(248, 73, 5, 0.2);
+}
+
+.apl-people__pill {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #999999;
+    position: relative;
+}
+
+.apl-people__pill:hover {
+    color: #ffffff;
+    background: rgba(248, 73, 5, 0.05);
+}
+
+.apl-people__pill.is-active {
+    background: linear-gradient(135deg, #f84905 0%, #ff6b35 100%);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(248, 73, 5, 0.3);
+}
+
+/* Panels */
+.apl-people__panel {
+    display: none;
+}
+
+.apl-people__panel.is-active {
+    display: block;
+}
+
+/* Grid - 3 columns per row */
+.apl-people__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem 2.5rem;
+}
+
+/* Card - Horizontal layout with rectangular avatar */
+.apl-people__card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.apl-people__card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(248, 73, 5, 0.03) 100%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+a.apl-people__card {
+    cursor: pointer;
+}
+
+/* Avatar - RECTANGULAR with larger size */
+.apl-people__avatar {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px; /* Rounded corners, not circular */
+    overflow: hidden;
+    background: #1a1a1a;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.apl-people__card:hover .apl-people__avatar {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(250, 250, 250, 0.2);
+}
+
+.apl-people__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Info */
+.apl-people__info {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.apl-people__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #ffffff;
+}
+
+.apl-people__role {
+    font-size: 1rem;
+    margin: 0;
+    color: #999999;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .apl-people__grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem 2rem;
+    }
+
+    .apl-people__avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .apl-people__card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .apl-people {
+        padding: 4rem 2rem;
+    }
+
+    .apl-people__title {
+        font-size: 2.5rem;
+    }
+
+    .apl-people__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem 1.5rem;
+    }
+
+    .apl-people__avatar {
+        width: 90px;
+        height: 90px;
+    }
+
+    .apl-people__name {
+        font-size: 1.125rem;
+    }
+
+    .apl-people__role {
+        font-size: 0.9375rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .apl-people {
+        padding: 3rem 1.5rem;
+    }
+
+    .apl-people__title {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .apl-people__subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .apl-people__pills {
+        gap: 0;
+        margin-bottom: 2.5rem;
+        width: 100%;
+    }
+
+    .apl-people__pill {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.875rem;
+        flex: 1;
+    }
+
+    .apl-people__grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .apl-people__card {
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+
+    .apl-people__avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+    }
+
+    .apl-people__name {
+        font-size: 1rem;
+    }
+
+    .apl-people__role {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .apl-people__card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .apl-people__avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .apl-people__info {
+        text-align: center;
+    }
+}

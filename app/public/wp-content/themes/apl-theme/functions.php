@@ -72,8 +72,159 @@ function apl_theme_enqueue_assets() {
         $theme_version,
         true
     );
+
+    // Enqueue People section assets (front page only)
+    if (is_front_page()) {
+        wp_enqueue_style(
+            'apl-people-style',
+            get_template_directory_uri() . '/assets/css/people.css',
+            array('apl-reference-style'),
+            $theme_version
+        );
+
+        wp_enqueue_script(
+            'apl-people-script',
+            get_template_directory_uri() . '/assets/js/people-toggle.js',
+            array(),
+            $theme_version,
+            true
+        );
+    }
 }
 add_action('wp_enqueue_scripts', 'apl_theme_enqueue_assets');
+
+/**
+ * Register Custom Post Type: People (Team/Advisors)
+ */
+function apl_register_people_cpt() {
+    // Register Custom Post Type
+    register_post_type('apl_person', array(
+        'labels' => array(
+            'name'               => __('People', 'apl-theme'),
+            'singular_name'      => __('Person', 'apl-theme'),
+            'add_new'            => __('Add New', 'apl-theme'),
+            'add_new_item'       => __('Add New Person', 'apl-theme'),
+            'edit_item'          => __('Edit Person', 'apl-theme'),
+            'new_item'           => __('New Person', 'apl-theme'),
+            'view_item'          => __('View Person', 'apl-theme'),
+            'search_items'       => __('Search People', 'apl-theme'),
+            'not_found'          => __('No people found', 'apl-theme'),
+            'not_found_in_trash' => __('No people found in Trash', 'apl-theme'),
+            'menu_name'          => __('People', 'apl-theme'),
+        ),
+        'public'              => false,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'menu_icon'           => 'dashicons-groups',
+        'supports'            => array('title', 'thumbnail', 'page-attributes'),
+        'has_archive'         => false,
+        'rewrite'             => false,
+        'capability_type'     => 'post',
+        'show_in_rest'        => false,
+    ));
+
+    // Register Taxonomy: Person Group (Team/Advisors)
+    register_taxonomy('apl_person_group', 'apl_person', array(
+        'labels' => array(
+            'name'          => __('Groups', 'apl-theme'),
+            'singular_name' => __('Group', 'apl-theme'),
+            'search_items'  => __('Search Groups', 'apl-theme'),
+            'all_items'     => __('All Groups', 'apl-theme'),
+            'edit_item'     => __('Edit Group', 'apl-theme'),
+            'update_item'   => __('Update Group', 'apl-theme'),
+            'add_new_item'  => __('Add New Group', 'apl-theme'),
+            'menu_name'     => __('Groups', 'apl-theme'),
+        ),
+        'hierarchical'      => true,
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'query_var'         => true,
+        'rewrite'           => false,
+        'show_in_rest'      => false,
+    ));
+
+    // Register Meta Fields
+    register_post_meta('apl_person', 'apl_role', array(
+        'type'              => 'string',
+        'single'            => true,
+        'sanitize_callback' => 'sanitize_text_field',
+        'show_in_rest'      => false,
+    ));
+
+    register_post_meta('apl_person', 'apl_linkedin', array(
+        'type'              => 'string',
+        'single'            => true,
+        'sanitize_callback' => 'esc_url_raw',
+        'show_in_rest'      => false,
+    ));
+}
+add_action('init', 'apl_register_people_cpt');
+
+/**
+ * Add metabox for Person meta fields (Role + LinkedIn)
+ */
+function apl_person_metabox() {
+    add_meta_box(
+        'apl_person_details',
+        __('Person Details', 'apl-theme'),
+        'apl_person_metabox_callback',
+        'apl_person',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'apl_person_metabox');
+
+/**
+ * Metabox callback to render fields
+ */
+function apl_person_metabox_callback($post) {
+    wp_nonce_field('apl_person_meta', 'apl_person_meta_nonce');
+
+    $role = get_post_meta($post->ID, 'apl_role', true);
+    $linkedin = get_post_meta($post->ID, 'apl_linkedin', true);
+    ?>
+    <p>
+        <label for="apl_role"><strong><?php _e('Role/Title:', 'apl-theme'); ?></strong></label><br>
+        <input type="text" id="apl_role" name="apl_role" value="<?php echo esc_attr($role); ?>" style="width: 100%; max-width: 500px;" placeholder="e.g., CEO, Advisor, Engineer">
+    </p>
+    <p>
+        <label for="apl_linkedin"><strong><?php _e('LinkedIn URL:', 'apl-theme'); ?></strong></label><br>
+        <input type="url" id="apl_linkedin" name="apl_linkedin" value="<?php echo esc_url($linkedin); ?>" style="width: 100%; max-width: 500px;" placeholder="https://linkedin.com/in/username">
+    </p>
+    <?php
+}
+
+/**
+ * Save metabox data
+ */
+function apl_save_person_meta($post_id) {
+    // Check nonce
+    if (!isset($_POST['apl_person_meta_nonce']) || !wp_verify_nonce($_POST['apl_person_meta_nonce'], 'apl_person_meta')) {
+        return;
+    }
+
+    // Check autosave
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    // Check permissions
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    // Save role
+    if (isset($_POST['apl_role'])) {
+        update_post_meta($post_id, 'apl_role', sanitize_text_field($_POST['apl_role']));
+    }
+
+    // Save LinkedIn
+    if (isset($_POST['apl_linkedin'])) {
+        update_post_meta($post_id, 'apl_linkedin', esc_url_raw($_POST['apl_linkedin']));
+    }
+}
+add_action('save_post_apl_person', 'apl_save_person_meta');
 
 /**
  * Helper to fetch theme mods with a fallback value.
@@ -801,5 +952,53 @@ function apl_customize_register($wp_customize) {
             )
         );
     }
+
+    // ========================================
+    // SECTION: Homepage – People (Team/Advisors)
+    // ========================================
+    $wp_customize->add_section('apl_people_section', array(
+        'title'    => __('Homepage – People', 'apl-theme'),
+        'priority' => 42,
+    ));
+
+    // People Section Title
+    $wp_customize->add_setting('apl_people_title', array(
+        'default'           => 'Team',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_people_title', array(
+        'label'   => __('Section Title', 'apl-theme'),
+        'section' => 'apl_people_section',
+        'type'    => 'text',
+    ));
+
+    // Enable Advisors Toggle
+    $wp_customize->add_setting('apl_people_enable_advisors', array(
+        'default'           => false,
+        'sanitize_callback' => 'rest_sanitize_boolean',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_people_enable_advisors', array(
+        'label'   => __('Enable Advisors Tab', 'apl-theme'),
+        'section' => 'apl_people_section',
+        'type'    => 'checkbox',
+    ));
+
+    // Default Tab Selection
+    $wp_customize->add_setting('apl_people_default_tab', array(
+        'default'           => 'advisors',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+    ));
+    $wp_customize->add_control('apl_people_default_tab', array(
+        'label'   => __('Default Tab', 'apl-theme'),
+        'section' => 'apl_people_section',
+        'type'    => 'select',
+        'choices' => array(
+            'advisors' => __('Advisors', 'apl-theme'),
+            'team'     => __('Team', 'apl-theme'),
+        ),
+    ));
 }
 add_action('customize_register', 'apl_customize_register');
