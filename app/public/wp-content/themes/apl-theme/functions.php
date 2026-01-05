@@ -118,6 +118,15 @@ function apl_theme_enqueue_assets() {
             true
         );
     }
+
+    if (is_page_template('page-templates/product.php')) {
+        wp_enqueue_style(
+            'apl-product-style',
+            get_template_directory_uri() . '/assets/css/product.css',
+            array('apl-reference-style'),
+            $theme_version
+        );
+    }
 }
 add_action('wp_enqueue_scripts', 'apl_theme_enqueue_assets');
 
@@ -1229,6 +1238,190 @@ function apl_customize_register($wp_customize) {
                 )
             )
         );
+    }
+
+    // ========================================
+    // SECTION: Product Page Options
+    // ========================================
+    $wp_customize->add_section(
+        'apl_product_page',
+        array(
+            'title'       => __('Product Page', 'apl-theme'),
+            'description' => __('Settings for the Product page template.', 'apl-theme'),
+            'priority'    => 40,
+        )
+    );
+
+    $product_fields = array(
+        'product_subtitle' => array(
+            'label'             => __('Hero Subtitle (Fallback)', 'apl-theme'),
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+        'product_primary_cta_label' => array(
+            'label'             => __('Primary CTA Label', 'apl-theme'),
+            'default'           => 'Book a Demo',
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+        'product_secondary_cta_label' => array(
+            'label'             => __('Secondary CTA Label', 'apl-theme'),
+            'default'           => 'See features',
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+    );
+
+    foreach ($product_fields as $id => $args) {
+        $wp_customize->add_setting(
+            $id,
+            array(
+                'default'           => $args['default'],
+                'sanitize_callback' => $args['sanitize_callback'],
+            )
+        );
+
+        $wp_customize->add_control(
+            $id,
+            array(
+                'label'   => $args['label'],
+                'section' => 'apl_product_page',
+                'type'    => 'text',
+            )
+        );
+    }
+
+    $wp_customize->add_section(
+        'apl_product_problem_blocks',
+        array(
+            'title'       => __('Product Page – Problem Blocks', 'apl-theme'),
+            'description' => __('Configure up to four alternating problem/solution cards.', 'apl-theme'),
+            'priority'    => 41,
+        )
+    );
+
+    $wp_customize->add_setting(
+        'product_problem_section_title',
+        array(
+            'default'           => __('What problem we are solving', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'product_problem_section_title',
+        array(
+            'label'   => __('Section Title', 'apl-theme'),
+            'section' => 'apl_product_problem_blocks',
+            'type'    => 'text',
+        )
+    );
+
+    $wp_customize->add_setting(
+        'product_problem_section_subtitle',
+        array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_textarea_field',
+        )
+    );
+
+    $wp_customize->add_control(
+        'product_problem_section_subtitle',
+        array(
+            'label'   => __('Section Subtitle', 'apl-theme'),
+            'section' => 'apl_product_problem_blocks',
+            'type'    => 'textarea',
+        )
+    );
+
+    for ($i = 1; $i <= 4; $i++) {
+        $wp_customize->add_setting(
+            "product_problem_{$i}_enabled",
+            array(
+                'default'           => false,
+                'sanitize_callback' => 'rest_sanitize_boolean',
+            )
+        );
+
+        $wp_customize->add_control(
+            "product_problem_{$i}_enabled",
+            array(
+                'label'   => sprintf(__('Enable Block %d', 'apl-theme'), $i),
+                'section' => 'apl_product_problem_blocks',
+                'type'    => 'checkbox',
+            )
+        );
+
+        $wp_customize->add_setting(
+            "product_problem_{$i}_image",
+            array(
+                'sanitize_callback' => 'absint',
+            )
+        );
+
+        $wp_customize->add_control(
+            new $media_control_class(
+                $wp_customize,
+                "product_problem_{$i}_image",
+                array(
+                    'label'     => sprintf(__('Block %d Image', 'apl-theme'), $i),
+                    'section'   => 'apl_product_problem_blocks',
+                    'mime_type' => 'image',
+                )
+            )
+        );
+
+        $wp_customize->add_setting(
+            "product_problem_{$i}_title",
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_text_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            "product_problem_{$i}_title",
+            array(
+                'label'   => sprintf(__('Block %d Title', 'apl-theme'), $i),
+                'section' => 'apl_product_problem_blocks',
+                'type'    => 'text',
+            )
+        );
+
+        $wp_customize->add_setting(
+            "product_problem_{$i}_text",
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_textarea_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            "product_problem_{$i}_text",
+            array(
+                'label'   => sprintf(__('Block %d Description', 'apl-theme'), $i),
+                'section' => 'apl_product_problem_blocks',
+                'type'    => 'textarea',
+            )
+        );
+
+        for ($b = 1; $b <= 3; $b++) {
+            $setting_id = "product_problem_{$i}_bullet_{$b}";
+            $wp_customize->add_setting(
+                $setting_id,
+                array(
+                    'default'           => '',
+                    'sanitize_callback' => 'sanitize_text_field',
+                )
+            );
+
+            $wp_customize->add_control(
+                $setting_id,
+                array(
+                    'label'   => sprintf(__('Block %1$d Bullet %2$d', 'apl-theme'), $i, $b),
+                    'section' => 'apl_product_problem_blocks',
+                    'type'    => 'text',
+                )
+            );
+        }
     }
 
     // ========================================
