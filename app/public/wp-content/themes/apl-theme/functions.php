@@ -103,12 +103,12 @@ function apl_theme_enqueue_assets() {
 
     // Enqueue People section assets (front page only)
     if (is_front_page()) {
-        wp_enqueue_style(
-            'apl-people-style',
-            get_template_directory_uri() . '/assets/css/people.css',
-            array('apl-reference-style'),
-            $theme_version
-        );
+    wp_enqueue_style(
+        'apl-people-style',
+        get_template_directory_uri() . '/assets/css/people.css',
+        array('apl-reference-style'),
+        $theme_version
+    );
 
         wp_enqueue_script(
             'apl-people-script',
@@ -116,6 +116,15 @@ function apl_theme_enqueue_assets() {
             array(),
             $theme_version,
             true
+        );
+    }
+
+    if (is_page_template('page-templates/about.php')) {
+        wp_enqueue_style(
+            'apl-about-style',
+            get_template_directory_uri() . '/assets/css/about.css',
+            array('apl-reference-style'),
+            $theme_version
         );
     }
 
@@ -1573,6 +1582,393 @@ function apl_customize_register($wp_customize) {
             )
         );
     }
+
+    // ========================================
+    // SECTION: About Page – Hero
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_hero',
+        array(
+            'title'       => __('About Page – Hero', 'apl-theme'),
+            'description' => __('Controls the hero section on the About page template.', 'apl-theme'),
+            'priority'    => 43,
+        )
+    );
+
+    $about_hero_fields = array(
+        'about_hero_badge' => array(
+            'label'             => __('Hero Badge', 'apl-theme'),
+            'default'           => __('About', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+        'about_hero_title_1' => array(
+            'label'             => __('Primary Title', 'apl-theme'),
+            'default'           => __('Who We Are', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+        'about_hero_title_2' => array(
+            'label'             => __('Accent Title', 'apl-theme'),
+            'default'           => __('Our Company Story', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
+        'about_hero_subtitle' => array(
+            'label'             => __('Subtitle', 'apl-theme'),
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+    );
+
+    foreach ($about_hero_fields as $id => $args) {
+        $wp_customize->add_setting(
+            $id,
+            array(
+                'default'           => $args['default'],
+                'sanitize_callback' => $args['sanitize_callback'],
+            )
+        );
+
+        $wp_customize->add_control(
+            $id,
+            array(
+                'label'   => $args['label'],
+                'section' => 'apl_about_hero',
+                'type'    => isset($args['type']) ? $args['type'] : 'text',
+            )
+        );
+    }
+
+    // ========================================
+    // SECTION: About Page – Mission & Vision
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_mv',
+        array(
+            'title'       => __('About Page – Mission & Vision', 'apl-theme'),
+            'description' => __('Controls the mission and vision cards on the About page.', 'apl-theme'),
+            'priority'    => 44,
+        )
+    );
+
+    $mv_blocks = array(
+        'mission' => array(
+            'enable_setting' => 'about_mission_enabled',
+            'image_setting'  => 'about_mission_image',
+            'heading_setting'=> 'about_mission_heading',
+            'text_setting'   => 'about_mission_text',
+            'heading_default'=> __('Mission', 'apl-theme'),
+        ),
+        'vision' => array(
+            'enable_setting' => 'about_vision_enabled',
+            'image_setting'  => 'about_vision_image',
+            'heading_setting'=> 'about_vision_heading',
+            'text_setting'   => 'about_vision_text',
+            'heading_default'=> __('Vision', 'apl-theme'),
+        ),
+    );
+
+    foreach ($mv_blocks as $key => $settings) {
+        $wp_customize->add_setting(
+            $settings['enable_setting'],
+            array(
+                'default'           => true,
+                'sanitize_callback' => 'rest_sanitize_boolean',
+            )
+        );
+
+        $wp_customize->add_control(
+            $settings['enable_setting'],
+            array(
+                'label'   => sprintf(__('Enable %s Card', 'apl-theme'), ucfirst($key)),
+                'section' => 'apl_about_mv',
+                'type'    => 'checkbox',
+            )
+        );
+
+        $wp_customize->add_setting(
+            $settings['image_setting'],
+            array(
+                'sanitize_callback' => 'absint',
+            )
+        );
+
+        $wp_customize->add_control(
+            new $media_control_class(
+                $wp_customize,
+                $settings['image_setting'],
+                array(
+                    'label'     => sprintf(__('%s Image', 'apl-theme'), ucfirst($key)),
+                    'section'   => 'apl_about_mv',
+                    'mime_type' => 'image',
+                )
+            )
+        );
+
+        $wp_customize->add_setting(
+            $settings['heading_setting'],
+            array(
+                'default'           => $settings['heading_default'],
+                'sanitize_callback' => 'sanitize_text_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            $settings['heading_setting'],
+            array(
+                'label'   => sprintf(__('%s Heading', 'apl-theme'), ucfirst($key)),
+                'section' => 'apl_about_mv',
+                'type'    => 'text',
+            )
+        );
+
+        $wp_customize->add_setting(
+            $settings['text_setting'],
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_textarea_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            $settings['text_setting'],
+            array(
+                'label'   => sprintf(__('%s Description', 'apl-theme'), ucfirst($key)),
+                'section' => 'apl_about_mv',
+                'type'    => 'textarea',
+            )
+        );
+    }
+
+    // ========================================
+    // SECTION: About Page – Stats Cards
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_stats',
+        array(
+            'title'       => __('About Page – Stats Cards', 'apl-theme'),
+            'description' => __('Growth Rate and Revenue stats cards.', 'apl-theme'),
+            'priority'    => 44,
+        )
+    );
+
+    // Growth Card
+    $wp_customize->add_setting('about_growth_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_growth_enabled', array('label' => __('Enable Growth Card', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_growth_heading', array('default' => 'Growth Rate', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_growth_heading', array('label' => __('Growth Heading', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_growth_rate', array('default' => '92%', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_growth_rate', array('label' => __('Growth Rate Value', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_growth_label', array('default' => '127,023 customers acquired', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_growth_label', array('label' => __('Growth Label', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_growth_chart', array('sanitize_callback' => 'absint'));
+    $wp_customize->add_control(new $media_control_class($wp_customize, 'about_growth_chart', array('label' => __('Growth Chart Image', 'apl-theme'), 'section' => 'apl_about_stats', 'mime_type' => 'image')));
+
+    // Revenue Card
+    $wp_customize->add_setting('about_revenue_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_revenue_enabled', array('label' => __('Enable Revenue Card', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_revenue_heading', array('default' => 'Revenue', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_revenue_heading', array('label' => __('Revenue Heading', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_revenue_amount', array('default' => '$165,750.23', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_revenue_amount', array('label' => __('Revenue Amount', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_revenue_label', array('default' => 'Won from 262 Deals', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_revenue_label', array('label' => __('Revenue Label', 'apl-theme'), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_revenue_chart', array('sanitize_callback' => 'absint'));
+    $wp_customize->add_control(new $media_control_class($wp_customize, 'about_revenue_chart', array('label' => __('Revenue Chart Image', 'apl-theme'), 'section' => 'apl_about_stats', 'mime_type' => 'image')));
+
+    // Bottom Stats Bar
+    for ($i = 1; $i <= 3; $i++) {
+        $wp_customize->add_setting("about_stat{$i}_enabled", array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+        $wp_customize->add_control("about_stat{$i}_enabled", array('label' => sprintf(__('Enable Stat %d', 'apl-theme'), $i), 'section' => 'apl_about_stats', 'type' => 'checkbox'));
+
+        $wp_customize->add_setting("about_stat{$i}_value", array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+        $wp_customize->add_control("about_stat{$i}_value", array('label' => sprintf(__('Stat %d Value', 'apl-theme'), $i), 'section' => 'apl_about_stats', 'type' => 'text'));
+
+        $wp_customize->add_setting("about_stat{$i}_label", array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+        $wp_customize->add_control("about_stat{$i}_label", array('label' => sprintf(__('Stat %d Label', 'apl-theme'), $i), 'section' => 'apl_about_stats', 'type' => 'text'));
+    }
+
+    // ========================================
+    // SECTION: About Page – Vision Section
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_vision_section',
+        array(
+            'title'       => __('About Page – Vision Unveiled', 'apl-theme'),
+            'description' => __('Large hero image section.', 'apl-theme'),
+            'priority'    => 45,
+        )
+    );
+
+    $wp_customize->add_setting('about_vision_section_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_vision_section_enabled', array('label' => __('Enable Vision Section', 'apl-theme'), 'section' => 'apl_about_vision_section', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_vision_section_badge', array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_vision_section_badge', array('label' => __('Badge', 'apl-theme'), 'section' => 'apl_about_vision_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_vision_section_title', array('default' => 'Our Vision Unveiled', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_vision_section_title', array('label' => __('Title', 'apl-theme'), 'section' => 'apl_about_vision_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_vision_section_image', array('sanitize_callback' => 'absint'));
+    $wp_customize->add_control(new $media_control_class($wp_customize, 'about_vision_section_image', array('label' => __('Hero Image', 'apl-theme'), 'section' => 'apl_about_vision_section', 'mime_type' => 'image')));
+
+    // ========================================
+    // SECTION: About Page – Team Section
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_team_section',
+        array(
+            'title'       => __('About Page – Team Section', 'apl-theme'),
+            'description' => __('Team members section (pulls from People CPT).', 'apl-theme'),
+            'priority'    => 46,
+        )
+    );
+
+    $wp_customize->add_setting('about_team_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_team_enabled', array('label' => __('Enable Team Section', 'apl-theme'), 'section' => 'apl_about_team_section', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_team_badge', array('default' => 'TEAM', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_team_badge', array('label' => __('Badge', 'apl-theme'), 'section' => 'apl_about_team_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_team_title_1', array('default' => 'The Visionaries', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_team_title_1', array('label' => __('Title Line 1', 'apl-theme'), 'section' => 'apl_about_team_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_team_title_2', array('default' => 'Behind Our Success', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_team_title_2', array('label' => __('Title Line 2 (Accent)', 'apl-theme'), 'section' => 'apl_about_team_section', 'type' => 'text'));
+
+    // ========================================
+    // SECTION: About Page – Mobile App Section
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_mobile_section',
+        array(
+            'title'       => __('About Page – Mobile App', 'apl-theme'),
+            'description' => __('Mobile app banking section.', 'apl-theme'),
+            'priority'    => 47,
+        )
+    );
+
+    $wp_customize->add_setting('about_mobile_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_mobile_enabled', array('label' => __('Enable Mobile Section', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_mobile_badge', array('default' => 'MOBIL APP', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_mobile_badge', array('label' => __('Badge', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_mobile_title_1', array('default' => 'Mobile App Banking', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_mobile_title_1', array('label' => __('Title Line 1', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_mobile_title_2', array('default' => 'at Your Fingertips', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_mobile_title_2', array('label' => __('Title Line 2 (Accent)', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_mobile_subtitle', array('default' => '', 'sanitize_callback' => 'sanitize_textarea_field'));
+    $wp_customize->add_control('about_mobile_subtitle', array('label' => __('Subtitle', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'type' => 'textarea'));
+
+    for ($i = 1; $i <= 2; $i++) {
+        $wp_customize->add_setting("about_mobile_feature{$i}_title", array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+        $wp_customize->add_control("about_mobile_feature{$i}_title", array('label' => sprintf(__('Feature %d Title', 'apl-theme'), $i), 'section' => 'apl_about_mobile_section', 'type' => 'text'));
+
+        $wp_customize->add_setting("about_mobile_feature{$i}_desc", array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+        $wp_customize->add_control("about_mobile_feature{$i}_desc", array('label' => sprintf(__('Feature %d Description', 'apl-theme'), $i), 'section' => 'apl_about_mobile_section', 'type' => 'text'));
+    }
+
+    $wp_customize->add_setting('about_mobile_image1', array('sanitize_callback' => 'absint'));
+    $wp_customize->add_control(new $media_control_class($wp_customize, 'about_mobile_image1', array('label' => __('Mobile Image 1', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'mime_type' => 'image')));
+
+    $wp_customize->add_setting('about_mobile_image2', array('sanitize_callback' => 'absint'));
+    $wp_customize->add_control(new $media_control_class($wp_customize, 'about_mobile_image2', array('label' => __('Mobile Image 2', 'apl-theme'), 'section' => 'apl_about_mobile_section', 'mime_type' => 'image')));
+
+    // ========================================
+    // SECTION: About Page – CEO Message
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_ceo_section',
+        array(
+            'title'       => __('About Page – CEO Message', 'apl-theme'),
+            'description' => __('CEO message with photo.', 'apl-theme'),
+            'priority'    => 48,
+        )
+    );
+
+    $wp_customize->add_setting('about_ceo_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_ceo_enabled', array('label' => __('Enable CEO Section', 'apl-theme'), 'section' => 'apl_about_ceo_section', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_ceo_image', array('sanitize_callback' => 'absint'));
+    $wp_customize->add_control(new $media_control_class($wp_customize, 'about_ceo_image', array('label' => __('CEO Photo', 'apl-theme'), 'section' => 'apl_about_ceo_section', 'mime_type' => 'image')));
+
+    $wp_customize->add_setting('about_ceo_text1', array('default' => '', 'sanitize_callback' => 'sanitize_textarea_field'));
+    $wp_customize->add_control('about_ceo_text1', array('label' => __('Paragraph 1', 'apl-theme'), 'section' => 'apl_about_ceo_section', 'type' => 'textarea'));
+
+    $wp_customize->add_setting('about_ceo_text2', array('default' => '', 'sanitize_callback' => 'sanitize_textarea_field'));
+    $wp_customize->add_control('about_ceo_text2', array('label' => __('Paragraph 2', 'apl-theme'), 'section' => 'apl_about_ceo_section', 'type' => 'textarea'));
+
+    // ========================================
+    // SECTION: About Page – Testimonials
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_testimonials_section',
+        array(
+            'title'       => __('About Page – Testimonials', 'apl-theme'),
+            'description' => __('Customer testimonials section.', 'apl-theme'),
+            'priority'    => 49,
+        )
+    );
+
+    $wp_customize->add_setting('about_testimonials_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_testimonials_enabled', array('label' => __('Enable Testimonials', 'apl-theme'), 'section' => 'apl_about_testimonials_section', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_testimonials_badge', array('default' => 'TESTIMONIAL', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_testimonials_badge', array('label' => __('Badge', 'apl-theme'), 'section' => 'apl_about_testimonials_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_testimonials_title', array('default' => 'What people who work with us think about us?', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_testimonials_title', array('label' => __('Section Title', 'apl-theme'), 'section' => 'apl_about_testimonials_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_testimonials_more_label', array('default' => 'Learn More', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_testimonials_more_label', array('label' => __('More Button Label', 'apl-theme'), 'section' => 'apl_about_testimonials_section', 'type' => 'text'));
+
+    for ($i = 1; $i <= 8; $i++) {
+        $wp_customize->add_setting("about_testimonial{$i}_name", array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+        $wp_customize->add_control("about_testimonial{$i}_name", array('label' => sprintf(__('Testimonial %d Name', 'apl-theme'), $i), 'section' => 'apl_about_testimonials_section', 'type' => 'text'));
+
+        $wp_customize->add_setting("about_testimonial{$i}_role", array('default' => '', 'sanitize_callback' => 'sanitize_text_field'));
+        $wp_customize->add_control("about_testimonial{$i}_role", array('label' => sprintf(__('Testimonial %d Role', 'apl-theme'), $i), 'section' => 'apl_about_testimonials_section', 'type' => 'text'));
+
+        $wp_customize->add_setting("about_testimonial{$i}_text", array('default' => '', 'sanitize_callback' => 'sanitize_textarea_field'));
+        $wp_customize->add_control("about_testimonial{$i}_text", array('label' => sprintf(__('Testimonial %d Text', 'apl-theme'), $i), 'section' => 'apl_about_testimonials_section', 'type' => 'textarea'));
+
+        $wp_customize->add_setting("about_testimonial{$i}_photo", array('sanitize_callback' => 'absint'));
+        $wp_customize->add_control(new $media_control_class($wp_customize, "about_testimonial{$i}_photo", array('label' => sprintf(__('Testimonial %d Photo', 'apl-theme'), $i), 'section' => 'apl_about_testimonials_section', 'mime_type' => 'image')));
+    }
+
+    // ========================================
+    // SECTION: About Page – Final CTA
+    // ========================================
+    $wp_customize->add_section(
+        'apl_about_cta_section',
+        array(
+            'title'       => __('About Page – Final CTA', 'apl-theme'),
+            'description' => __('Final call-to-action section.', 'apl-theme'),
+            'priority'    => 50,
+        )
+    );
+
+    $wp_customize->add_setting('about_cta_enabled', array('default' => true, 'sanitize_callback' => 'rest_sanitize_boolean'));
+    $wp_customize->add_control('about_cta_enabled', array('label' => __('Enable CTA Section', 'apl-theme'), 'section' => 'apl_about_cta_section', 'type' => 'checkbox'));
+
+    $wp_customize->add_setting('about_cta_title', array('default' => 'Open an account for exclusive financial perks', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_cta_title', array('label' => __('CTA Title', 'apl-theme'), 'section' => 'apl_about_cta_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_cta_button_text', array('default' => 'Get started - for free', 'sanitize_callback' => 'sanitize_text_field'));
+    $wp_customize->add_control('about_cta_button_text', array('label' => __('Button Text', 'apl-theme'), 'section' => 'apl_about_cta_section', 'type' => 'text'));
+
+    $wp_customize->add_setting('about_cta_button_url', array('default' => '#', 'sanitize_callback' => 'esc_url_raw'));
+    $wp_customize->add_control('about_cta_button_url', array('label' => __('Button URL', 'apl-theme'), 'section' => 'apl_about_cta_section', 'type' => 'url'));
 
     // ========================================
     // SECTION: Homepage – People (Team/Advisors)
