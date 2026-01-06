@@ -62,13 +62,6 @@ get_header();
         </div>
     </section>
 
-    <section class="apl-product__demo-strip">
-        <div class="apl-product__demo-strip-inner">
-            <p class="apl-product__demo-strip-text">Ready to see SAiGE in action?</p>
-            <a class="apl-product__btn apl-product__btn--primary" href="#book-demo">Book a Demo</a>
-        </div>
-    </section>
-
     <?php
     $problem_blocks = array();
 
@@ -160,9 +153,57 @@ get_header();
         </section>
     <?php endif; ?>
 
+    <?php
+    $blog_page_id     = get_option('page_for_posts');
+    $blog_archive_url = $blog_page_id ? get_permalink($blog_page_id) : home_url('/blog/');
+    $articles_query   = new WP_Query(
+        array(
+            'post_type'      => 'post',
+            'post_status'    => 'publish',
+            'posts_per_page' => 3,
+            'ignore_sticky_posts' => true,
+        )
+    );
+    ?>
+
+    <?php if ($articles_query->have_posts()) : ?>
+        <section class="apl-product__blogs" id="latest-articles">
+            <div class="apl-product__articles-wrap">
+                <div class="apl-articles__header">
+                    <h2 class="apl-articles__title"><?php esc_html_e('Read all articles', 'apl-theme'); ?></h2>
+                    <?php if (!empty($blog_archive_url)) : ?>
+                        <a class="apl-articles__all" href="<?php echo esc_url($blog_archive_url); ?>"><?php esc_html_e('View all', 'apl-theme'); ?></a>
+                    <?php endif; ?>
+                </div>
+                <div class="apl-articles__grid">
+                    <?php
+                    while ($articles_query->have_posts()) :
+                        $articles_query->the_post();
+                        $categories = get_the_category();
+                        $category   = !empty($categories) ? $categories[0]->name : __('Insights', 'apl-theme');
+                        ?>
+                        <a class="apl-article-card" href="<?php the_permalink(); ?>">
+                            <div class="apl-article-card__media">
+                                <?php if (has_post_thumbnail()) : ?>
+                                    <?php the_post_thumbnail('large'); ?>
+                                <?php else : ?>
+                                    <div class="apl-article-card__media-placeholder" aria-hidden="true"></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="apl-article-card__body">
+                                <span class="apl-article-card__meta"><?php echo esc_html($category); ?></span>
+                                <h3 class="apl-article-card__heading"><?php the_title(); ?></h3>
+                            </div>
+                        </a>
+                    <?php endwhile; ?>
+                </div>
+            </div>
+        </section>
+        <?php wp_reset_postdata(); ?>
+    <?php endif; ?>
+
     <section class="apl-product__how"></section>
     <section class="apl-product__benefits"></section>
-    <section class="apl-product__blogs"></section>
     <section class="apl-product__cta"></section>
     <section class="apl-product__book-demo" id="book-demo"></section>
 </main>
