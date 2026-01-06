@@ -170,7 +170,10 @@ get_header();
         <section class="apl-product__blogs" id="latest-articles">
             <div class="apl-product__articles-wrap">
                 <div class="apl-articles__header">
-                    <h2 class="apl-articles__title"><?php esc_html_e('Read all articles', 'apl-theme'); ?></h2>
+                    <?php
+                    $articles_title = get_theme_mod('product_articles_title', __('Read all articles', 'apl-theme'));
+                    ?>
+                    <h2 class="apl-articles__title"><?php echo esc_html(!empty($articles_title) ? $articles_title : __('Read all articles', 'apl-theme')); ?></h2>
                     <?php if (!empty($blog_archive_url)) : ?>
                         <a class="apl-articles__all" href="<?php echo esc_url($blog_archive_url); ?>"><?php esc_html_e('View all', 'apl-theme'); ?></a>
                     <?php endif; ?>
@@ -201,6 +204,96 @@ get_header();
         </section>
         <?php wp_reset_postdata(); ?>
     <?php endif; ?>
+
+    <?php
+    $demo_enabled = (bool) get_theme_mod('product_demo_enabled', false);
+    if ($demo_enabled) {
+        $demo_title      = get_theme_mod('product_demo_title', '');
+        $demo_subtitle   = get_theme_mod('product_demo_subtitle', '');
+        $demo_cta_label  = get_theme_mod('product_demo_cta_label', __('Book a Demo', 'apl-theme'));
+        $demo_cta_url    = get_theme_mod('product_demo_cta_url', '#book-demo');
+        $demo_points     = array_filter(
+            array(
+                get_theme_mod('product_demo_point_1', ''),
+                get_theme_mod('product_demo_point_2', ''),
+                get_theme_mod('product_demo_point_3', ''),
+            ),
+            function ($value) {
+                return '' !== trim($value);
+            }
+        );
+        $demo_images = array();
+        for ($i = 1; $i <= 3; $i++) {
+            $image_url = apl_get_media_url("product_demo_img_{$i}");
+            if (!$image_url) {
+                continue;
+            }
+
+            $demo_images[] = array(
+                'url' => $image_url,
+                'alt' => get_theme_mod("product_demo_img_{$i}_alt", sprintf(__('Demo image %d', 'apl-theme'), $i)),
+            );
+        }
+
+        $has_visual = !empty($demo_images);
+        $has_copy   = !empty($demo_title) || !empty($demo_subtitle);
+
+        if ($has_visual || $has_copy) :
+            ?>
+            <section class="apl-product__demo-cta" id="try-demo">
+                <div class="apl-product__demo-cta-inner">
+                    <div class="apl-demo-cta__left">
+                        <div class="apl-demo-cta__copy">
+                            <?php if (!empty($demo_title)) : ?>
+                                <h2 class="apl-demo-cta__title"><?php echo esc_html($demo_title); ?></h2>
+                            <?php endif; ?>
+                            <?php if (!empty($demo_subtitle)) : ?>
+                                <p class="apl-demo-cta__subtitle"><?php echo esc_html($demo_subtitle); ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if (!empty($demo_cta_label) && !empty($demo_cta_url)) : ?>
+                            <div class="apl-demo-cta__actions">
+                                <a class="apl-product__btn apl-product__btn--primary" href="<?php echo esc_url($demo_cta_url); ?>">
+                                    <?php echo esc_html($demo_cta_label); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($demo_points)) : ?>
+                            <ul class="apl-demo-cta__points">
+                                <?php foreach ($demo_points as $point) : ?>
+                                    <li><?php echo esc_html($point); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($has_visual) : ?>
+                        <div class="apl-demo-cta__right">
+                            <div class="apl-demo-cta__stack">
+                                <?php
+                                $card_classes = array(
+                                    'apl-demo-cta__card--front',
+                                    'apl-demo-cta__card--mid',
+                                    'apl-demo-cta__card--back',
+                                );
+                                foreach ($demo_images as $index => $image) :
+                                    $card_class = isset($card_classes[$index]) ? $card_classes[$index] : $card_classes[0];
+                                    ?>
+                                    <div class="apl-demo-cta__card <?php echo esc_attr($card_class); ?>">
+                                        <img src="<?php echo esc_url($image['url']); ?>" alt="<?php echo esc_attr($image['alt']); ?>">
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </section>
+            <?php
+        endif;
+    }
+    ?>
 
     <section class="apl-product__how"></section>
     <section class="apl-product__benefits"></section>

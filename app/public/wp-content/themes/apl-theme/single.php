@@ -72,55 +72,54 @@ if (have_posts()) :
                         ?>
                     </div>
 
-                    <!-- Related Posts Section -->
                     <?php
-                    // Get 4 most recent posts excluding current post
-                    $related_args = array(
-                        'post__not_in'        => array(get_the_ID()),
-                        'posts_per_page'      => 4,
-                        'orderby'             => 'date',
-                        'order'               => 'DESC',
-                        'ignore_sticky_posts' => 1,
+                    $blog_page_id     = get_option('page_for_posts');
+                    $blog_archive_url = $blog_page_id ? get_permalink($blog_page_id) : home_url('/blog/');
+                    $articles_query   = new WP_Query(
+                        array(
+                            'post_type'           => 'post',
+                            'post_status'         => 'publish',
+                            'posts_per_page'      => 3,
+                            'ignore_sticky_posts' => true,
+                            'post__not_in'        => array(get_the_ID()),
+                        )
                     );
-                    $related_query = new WP_Query($related_args);
 
-                    if ($related_query->have_posts()) :
+                    if ($articles_query->have_posts()) :
                         ?>
-                        <div class="apl-blog-single__related">
-                            <h3 class="apl-blog-single__related-title"><?php esc_html_e('You may also like', 'apl-theme'); ?></h3>
-                            <div class="apl-blog-single__related-grid">
-                                <?php
-                                while ($related_query->have_posts()) :
-                                    $related_query->the_post();
-                                    $related_cats = get_the_category();
-                                    $related_category = !empty($related_cats) ? $related_cats[0]->name : '';
-                                    ?>
-                                    <article class="apl-blog-related-card">
-                                        <?php if (has_post_thumbnail()) : ?>
-                                            <a href="<?php the_permalink(); ?>" class="apl-blog-related-card__image">
-                                                <?php the_post_thumbnail('medium'); ?>
-                                            </a>
-                                        <?php endif; ?>
+                        <section class="apl-blog-single__articles" id="latest-articles">
+                            <div class="apl-blog-single__articles-wrap">
+                                <div class="apl-articles__header">
+                                    <h2 class="apl-articles__title"><?php esc_html_e('Read all articles', 'apl-theme'); ?></h2>
+                                    <?php if (!empty($blog_archive_url)) : ?>
+                                        <a class="apl-articles__all" href="<?php echo esc_url($blog_archive_url); ?>"><?php esc_html_e('View all', 'apl-theme'); ?></a>
+                                    <?php endif; ?>
+                                </div>
 
-                                        <div class="apl-blog-related-card__content">
-                                            <?php if ($related_category) : ?>
-                                                <span class="apl-blog-related-card__category">
-                                                    <?php echo esc_html(strtoupper($related_category)); ?>
-                                                </span>
-                                            <?php endif; ?>
-
-                                            <h4 class="apl-blog-related-card__title">
-                                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                                            </h4>
-
-                                            <time class="apl-blog-related-card__date" datetime="<?php echo esc_attr(get_the_date('c')); ?>">
-                                                <?php echo esc_html(get_the_date('F j, Y')); ?>
-                                            </time>
-                                        </div>
-                                    </article>
-                                <?php endwhile; ?>
+                                <div class="apl-articles__grid">
+                                    <?php
+                                    while ($articles_query->have_posts()) :
+                                        $articles_query->the_post();
+                                        $article_categories = get_the_category();
+                                        $article_category   = !empty($article_categories) ? $article_categories[0]->name : __('Insights', 'apl-theme');
+                                        ?>
+                                        <a class="apl-article-card" href="<?php the_permalink(); ?>">
+                                            <div class="apl-article-card__media">
+                                                <?php if (has_post_thumbnail()) : ?>
+                                                    <?php the_post_thumbnail('large'); ?>
+                                                <?php else : ?>
+                                                    <div class="apl-article-card__media-placeholder" aria-hidden="true"></div>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="apl-article-card__body">
+                                                <span class="apl-article-card__meta"><?php echo esc_html($article_category); ?></span>
+                                                <h3 class="apl-article-card__heading"><?php the_title(); ?></h3>
+                                            </div>
+                                        </a>
+                                    <?php endwhile; ?>
+                                </div>
                             </div>
-                        </div>
+                        </section>
                         <?php
                         wp_reset_postdata();
                     endif;

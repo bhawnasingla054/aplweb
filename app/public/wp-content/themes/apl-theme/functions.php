@@ -1268,6 +1268,11 @@ function apl_customize_register($wp_customize) {
             'default'           => 'See features',
             'sanitize_callback' => 'sanitize_text_field',
         ),
+        'product_articles_title' => array(
+            'label'             => __('Articles Section Title', 'apl-theme'),
+            'default'           => __('Read all articles', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+        ),
     );
 
     foreach ($product_fields as $id => $args) {
@@ -1425,11 +1430,156 @@ function apl_customize_register($wp_customize) {
     }
 
     // ========================================
+    // SECTION: Product Page – Demo CTA
+    // ========================================
+    $wp_customize->add_section(
+        'apl_product_demo_section',
+        array(
+            'title'       => __('Product Page – Demo Section', 'apl-theme'),
+            'description' => __('Controls the “Try our product” CTA block displayed after the Product blog section.', 'apl-theme'),
+            'priority'    => 42,
+        )
+    );
+
+    $wp_customize->add_setting(
+        'product_demo_enabled',
+        array(
+            'default'           => false,
+            'sanitize_callback' => 'rest_sanitize_boolean',
+        )
+    );
+
+    $wp_customize->add_control(
+        'product_demo_enabled',
+        array(
+            'label'   => __('Enable Demo Section', 'apl-theme'),
+            'section' => 'apl_product_demo_section',
+            'type'    => 'checkbox',
+        )
+    );
+
+    $demo_text_fields = array(
+        'product_demo_title' => array(
+            'label'             => __('Title', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+        'product_demo_subtitle' => array(
+            'label'             => __('Subtitle', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_textarea_field',
+            'type'              => 'textarea',
+        ),
+        'product_demo_cta_label' => array(
+            'label'             => __('CTA Label', 'apl-theme'),
+            'default'           => __('Book a Demo', 'apl-theme'),
+            'sanitize_callback' => 'sanitize_text_field',
+            'type'              => 'text',
+        ),
+    );
+
+    foreach ($demo_text_fields as $id => $args) {
+        $wp_customize->add_setting(
+            $id,
+            array(
+                'default'           => isset($args['default']) ? $args['default'] : '',
+                'sanitize_callback' => $args['sanitize_callback'],
+            )
+        );
+
+        $wp_customize->add_control(
+            $id,
+            array(
+                'label'   => $args['label'],
+                'section' => 'apl_product_demo_section',
+                'type'    => $args['type'],
+            )
+        );
+    }
+
+    $wp_customize->add_setting(
+        'product_demo_cta_url',
+        array(
+            'default'           => '#book-demo',
+            'sanitize_callback' => 'esc_url_raw',
+        )
+    );
+
+    $wp_customize->add_control(
+        'product_demo_cta_url',
+        array(
+            'label'       => __('CTA URL', 'apl-theme'),
+            'description' => __('Accepts full URLs or on-page anchors (e.g. #book-demo).', 'apl-theme'),
+            'section'     => 'apl_product_demo_section',
+            'type'        => 'text',
+        )
+    );
+
+    for ($p = 1; $p <= 3; $p++) {
+        $wp_customize->add_setting(
+            "product_demo_point_{$p}",
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_text_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            "product_demo_point_{$p}",
+            array(
+                'label'   => sprintf(__('Selling Point %d', 'apl-theme'), $p),
+                'section' => 'apl_product_demo_section',
+                'type'    => 'text',
+            )
+        );
+    }
+
+    for ($i = 1; $i <= 3; $i++) {
+        $image_setting = "product_demo_img_{$i}";
+        $alt_setting   = "product_demo_img_{$i}_alt";
+
+        $wp_customize->add_setting(
+            $image_setting,
+            array(
+                'sanitize_callback' => 'absint',
+            )
+        );
+
+        $wp_customize->add_control(
+            new $media_control_class(
+                $wp_customize,
+                $image_setting,
+                array(
+                    'label'     => sprintf(__('Image %d', 'apl-theme'), $i),
+                    'section'   => 'apl_product_demo_section',
+                    'mime_type' => 'image',
+                )
+            )
+        );
+
+        $wp_customize->add_setting(
+            $alt_setting,
+            array(
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_text_field',
+            )
+        );
+
+        $wp_customize->add_control(
+            $alt_setting,
+            array(
+                'label'   => sprintf(__('Image %d Alt Text', 'apl-theme'), $i),
+                'section' => 'apl_product_demo_section',
+                'type'    => 'text',
+            )
+        );
+    }
+
+    // ========================================
     // SECTION: Homepage – People (Team/Advisors)
     // ========================================
     $wp_customize->add_section('apl_people_section', array(
         'title'    => __('Homepage – People', 'apl-theme'),
-        'priority' => 42,
+        'priority' => 43,
     ));
 
     // People Section Title
