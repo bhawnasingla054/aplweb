@@ -15,7 +15,7 @@ get_header();
 <main class="apl-about">
     <?php
     // ========================================
-    // HERO SECTION
+    // HERO SECTION WITH ALL COMPONENTS
     // ========================================
     $hero_badge    = trim(get_theme_mod('about_hero_badge', __('ABOUT', 'apl-theme')));
     $hero_title_1  = trim(get_theme_mod('about_hero_title_1', __('Who We Are', 'apl-theme')));
@@ -23,149 +23,116 @@ get_header();
     $hero_subtitle = trim(get_theme_mod('about_hero_subtitle', __('Gain financial acumen using our expert tools and insights to efficiently manage your money and enhance personal wealth.', 'apl-theme')));
     ?>
     <section class="apl-about__hero">
-        <div class="apl-about__panel">
-            <div class="apl-about__hero-inner">
+        <div class="apl-about__container">
+            <!-- Hero Title Area -->
+            <div class="apl-about__hero-content">
                 <?php if (!empty($hero_badge)) : ?>
                     <span class="apl-about__badge"><?php echo esc_html($hero_badge); ?></span>
                 <?php endif; ?>
 
-                <div class="apl-about__titles">
+                <div class="apl-about__hero-titles">
                     <?php if (!empty($hero_title_1)) : ?>
-                        <h1 class="apl-about__title"><?php echo esc_html($hero_title_1); ?></h1>
+                        <h1 class="apl-about__hero-title"><?php echo esc_html($hero_title_1); ?></h1>
                     <?php endif; ?>
                     <?php if (!empty($hero_title_2)) : ?>
-                        <h2 class="apl-about__title apl-about__title--accent"><?php echo esc_html($hero_title_2); ?></h2>
+                        <h2 class="apl-about__hero-title apl-about__hero-title--accent"><?php echo esc_html($hero_title_2); ?></h2>
                     <?php endif; ?>
                 </div>
 
                 <?php if (!empty($hero_subtitle)) : ?>
-                    <p class="apl-about__subtitle"><?php echo esc_html($hero_subtitle); ?></p>
+                    <p class="apl-about__hero-subtitle"><?php echo esc_html($hero_subtitle); ?></p>
                 <?php endif; ?>
             </div>
 
             <?php
-            // ========================================
-            // STATS CARDS - Growth Rate & Revenue
-            // ========================================
+            // Stats Cards (Growth Rate & Revenue)
+            $growth_enabled = get_theme_mod('about_growth_enabled', true);
+            $revenue_enabled = get_theme_mod('about_revenue_enabled', true);
             ?>
-            <div class="apl-about__stats-grid">
-                <?php
-                $growth_enabled = get_theme_mod('about_growth_enabled', true);
-                if ($growth_enabled) :
-                    $growth_rate = trim(get_theme_mod('about_growth_rate', '92%'));
-                    $growth_label = trim(get_theme_mod('about_growth_label', '127,023 customers acquired'));
-                ?>
+
+            <?php if ($growth_enabled || $revenue_enabled) : ?>
+            <div class="apl-about__stats-cards">
+                <?php if ($growth_enabled) : ?>
                 <div class="apl-about__stat-card">
                     <h3 class="apl-about__stat-heading"><?php echo esc_html(get_theme_mod('about_growth_heading', 'Growth Rate')); ?></h3>
-                    <div class="apl-about__stat-value"><?php echo esc_html($growth_rate); ?></div>
-                    <p class="apl-about__stat-label"><?php echo esc_html($growth_label); ?></p>
-                    <div class="apl-about__chart">
-                        <img src="<?php echo esc_url(apl_get_media_url('about_growth_chart')); ?>" alt="Growth chart">
+                    <div class="apl-about__stat-value"><?php echo esc_html(get_theme_mod('about_growth_value', '92%')); ?></div>
+                    <p class="apl-about__stat-label"><?php echo esc_html(get_theme_mod('about_growth_label', '127,023 customers acquired')); ?></p>
+                    <?php
+                    $growth_chart = apl_get_media_url('about_growth_chart');
+                    if (!empty($growth_chart)) :
+                    ?>
+                    <div class="apl-about__stat-chart">
+                        <img src="<?php echo esc_url($growth_chart); ?>" alt="Growth chart">
                     </div>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
 
-                <?php
-                $revenue_enabled = get_theme_mod('about_revenue_enabled', true);
-                if ($revenue_enabled) :
-                    $revenue_amount = trim(get_theme_mod('about_revenue_amount', '$165,750.23'));
-                    $revenue_label = trim(get_theme_mod('about_revenue_label', 'Won from 262 Deals'));
-                ?>
+                <?php if ($revenue_enabled) : ?>
                 <div class="apl-about__stat-card">
                     <h3 class="apl-about__stat-heading"><?php echo esc_html(get_theme_mod('about_revenue_heading', 'Revenue')); ?></h3>
-                    <div class="apl-about__stat-value"><?php echo esc_html($revenue_amount); ?></div>
-                    <p class="apl-about__stat-label"><?php echo esc_html($revenue_label); ?></p>
-                    <div class="apl-about__chart">
-                        <img src="<?php echo esc_url(apl_get_media_url('about_revenue_chart')); ?>" alt="Revenue chart">
+                    <div class="apl-about__stat-value"><?php echo esc_html(get_theme_mod('about_revenue_value', '$165,750.23')); ?></div>
+                    <p class="apl-about__stat-label"><?php echo esc_html(get_theme_mod('about_revenue_label', 'Won from 262 Deals')); ?></p>
+                    <?php
+                    $revenue_chart = apl_get_media_url('about_revenue_chart');
+                    if (!empty($revenue_chart)) :
+                    ?>
+                    <div class="apl-about__stat-chart">
+                        <img src="<?php echo esc_url($revenue_chart); ?>" alt="Revenue chart">
                     </div>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
-            </div>
-
-            <?php
-            // ========================================
-            // MISSION & VISION CARDS
-            // ========================================
-            $mv_cards = array();
-            $mv_configs = array(
-                'vision' => array(
-                    'enabled' => get_theme_mod('about_vision_enabled', true),
-                    'heading' => trim(get_theme_mod('about_vision_heading', __('Vision', 'apl-theme'))),
-                    'text'    => trim(get_theme_mod('about_vision_text', '')),
-                ),
-                'mission' => array(
-                    'enabled' => get_theme_mod('about_mission_enabled', true),
-                    'heading' => trim(get_theme_mod('about_mission_heading', __('Mission', 'apl-theme'))),
-                    'text'    => trim(get_theme_mod('about_mission_text', '')),
-                ),
-            );
-
-            foreach ($mv_configs as $key => $card) {
-                $has_copy = !empty($card['heading']) || !empty($card['text']);
-                if ($card['enabled'] && $has_copy) {
-                    $card['slug'] = $key;
-                    $mv_cards[]   = $card;
-                }
-            }
-            ?>
-
-            <?php if (!empty($mv_cards)) : ?>
-            <div class="apl-about__mv-grid">
-                <?php foreach ($mv_cards as $card) : ?>
-                    <article class="apl-about__mv-card">
-                        <?php if (!empty($card['heading'])) : ?>
-                            <h3 class="apl-about__mv-heading"><?php echo esc_html($card['heading']); ?></h3>
-                        <?php endif; ?>
-                        <?php if (!empty($card['text'])) : ?>
-                            <p class="apl-about__mv-text"><?php echo esc_html($card['text']); ?></p>
-                        <?php endif; ?>
-                    </article>
-                <?php endforeach; ?>
             </div>
             <?php endif; ?>
 
             <?php
-            // ========================================
-            // BOTTOM STATS BAR
-            // ========================================
+            // Vision & Mission Cards
+            $vision_enabled = get_theme_mod('about_vision_enabled', true);
+            $mission_enabled = get_theme_mod('about_mission_enabled', true);
             ?>
-            <div class="apl-about__bottom-stats">
-                <?php
-                $stat1_enabled = get_theme_mod('about_stat1_enabled', true);
-                if ($stat1_enabled) :
-                    $stat1_value = trim(get_theme_mod('about_stat1_value', '120,472'));
-                    $stat1_label = trim(get_theme_mod('about_stat1_label', 'TRUSTED REVIEWS'));
-                ?>
-                <div class="apl-about__bottom-stat">
-                    <div class="apl-about__bottom-stat-value"><?php echo esc_html($stat1_value); ?></div>
-                    <div class="apl-about__bottom-stat-label"><?php echo esc_html($stat1_label); ?></div>
+
+            <?php if ($vision_enabled || $mission_enabled) : ?>
+            <div class="apl-about__vm-cards">
+                <?php if ($vision_enabled) : ?>
+                <div class="apl-about__vm-card">
+                    <h3 class="apl-about__vm-heading"><?php echo esc_html(get_theme_mod('about_vision_heading', 'Vision')); ?></h3>
+                    <p class="apl-about__vm-text"><?php echo esc_html(get_theme_mod('about_vision_text', 'Transforming the customer experience through technological innovation in the financial sector, fostering inclusive and sustainable economic growth for all.')); ?></p>
                 </div>
                 <?php endif; ?>
 
-                <?php
-                $stat2_enabled = get_theme_mod('about_stat2_enabled', true);
-                if ($stat2_enabled) :
-                    $stat2_value = trim(get_theme_mod('about_stat2_value', '99%'));
-                    $stat2_label = trim(get_theme_mod('about_stat2_label', 'CUSTOMER SATISFACTION'));
-                ?>
-                <div class="apl-about__bottom-stat">
-                    <div class="apl-about__bottom-stat-value"><?php echo esc_html($stat2_value); ?></div>
-                    <div class="apl-about__bottom-stat-label"><?php echo esc_html($stat2_label); ?></div>
-                </div>
-                <?php endif; ?>
-
-                <?php
-                $stat3_enabled = get_theme_mod('about_stat3_enabled', true);
-                if ($stat3_enabled) :
-                    $stat3_value = trim(get_theme_mod('about_stat3_value', '92K'));
-                    $stat3_label = trim(get_theme_mod('about_stat3_label', 'EXPENSES SAVED'));
-                ?>
-                <div class="apl-about__bottom-stat">
-                    <div class="apl-about__bottom-stat-value"><?php echo esc_html($stat3_value); ?></div>
-                    <div class="apl-about__bottom-stat-label"><?php echo esc_html($stat3_label); ?></div>
+                <?php if ($mission_enabled) : ?>
+                <div class="apl-about__vm-card">
+                    <h3 class="apl-about__vm-heading"><?php echo esc_html(get_theme_mod('about_mission_heading', 'Mission')); ?></h3>
+                    <p class="apl-about__vm-text"><?php echo esc_html(get_theme_mod('about_mission_text', 'To provide reliable, innovative and accessible solutions that will enable individuals and businesses to achieve their financial goals.')); ?></p>
                 </div>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
+
+            <?php
+            // Bottom Stats Bar
+            $bottom_stats = array();
+            for ($i = 1; $i <= 3; $i++) {
+                $enabled = get_theme_mod("about_bottom_stat{$i}_enabled", true);
+                $value = trim(get_theme_mod("about_bottom_stat{$i}_value", ''));
+                $label = trim(get_theme_mod("about_bottom_stat{$i}_label", ''));
+                if ($enabled && !empty($value)) {
+                    $bottom_stats[] = array('value' => $value, 'label' => $label);
+                }
+            }
+            ?>
+
+            <?php if (!empty($bottom_stats)) : ?>
+            <div class="apl-about__bottom-stats">
+                <?php foreach ($bottom_stats as $stat) : ?>
+                <div class="apl-about__bottom-stat">
+                    <div class="apl-about__bottom-stat-value"><?php echo esc_html($stat['value']); ?></div>
+                    <div class="apl-about__bottom-stat-label"><?php echo esc_html($stat['label']); ?></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -173,23 +140,34 @@ get_header();
     // ========================================
     // VISION UNVEILED SECTION
     // ========================================
-    $vision_enabled   = get_theme_mod('about_vision_section_enabled', true);
-    if ($vision_enabled) :
-        $vision_badge     = trim(get_theme_mod('about_vision_section_badge', ''));
-        $vision_title     = trim(get_theme_mod('about_vision_section_title', __('Our Vision Unveiled', 'apl-theme')));
-        $vision_image     = apl_get_media_url('about_vision_section_image');
+    $vision_section_enabled = get_theme_mod('about_vision_section_enabled', true);
+    if ($vision_section_enabled) :
+        $vision_section_badge = trim(get_theme_mod('about_vision_section_badge', __('ABOUT', 'apl-theme')));
+        $vision_section_title_1 = trim(get_theme_mod('about_vision_section_title_1', __('Our Vision Unveiled', 'apl-theme')));
+        $vision_section_title_2 = trim(get_theme_mod('about_vision_section_title_2', __('Legacy in Motion', 'apl-theme')));
+        $vision_section_image = apl_get_media_url('about_vision_section_image');
     ?>
-    <section class="apl-about__vision-section">
-        <div class="apl-about__panel">
-            <?php if (!empty($vision_badge)) : ?>
-                <span class="apl-about__badge"><?php echo esc_html($vision_badge); ?></span>
+    <section class="apl-about__vision-unveiled">
+        <div class="apl-about__container">
+            <?php if (!empty($vision_section_badge)) : ?>
+                <span class="apl-about__badge"><?php echo esc_html($vision_section_badge); ?></span>
             <?php endif; ?>
-            <?php if (!empty($vision_title)) : ?>
-                <h2 class="apl-about__section-title"><?php echo esc_html($vision_title); ?></h2>
-            <?php endif; ?>
-            <?php if (!empty($vision_image)) : ?>
-                <div class="apl-about__vision-image">
-                    <img src="<?php echo esc_url($vision_image); ?>" alt="<?php echo esc_attr($vision_title); ?>">
+
+            <h2 class="apl-about__vision-unveiled-title">
+                <?php if (!empty($vision_section_title_1)) : ?>
+                    <?php echo esc_html($vision_section_title_1); ?>
+                <?php endif; ?>
+                <?php if (!empty($vision_section_title_2)) : ?>
+                    <br>
+                    <span class="apl-about__vision-unveiled-title--accent">
+                        Experience Our <?php echo esc_html($vision_section_title_2); ?>
+                    </span>
+                <?php endif; ?>
+            </h2>
+
+            <?php if (!empty($vision_section_image)) : ?>
+                <div class="apl-about__vision-unveiled-image">
+                    <img src="<?php echo esc_url($vision_section_image); ?>" alt="<?php echo esc_attr($vision_section_title_1); ?>">
                 </div>
             <?php endif; ?>
         </div>
@@ -198,20 +176,64 @@ get_header();
 
     <?php
     // ========================================
-    // TEAM SECTION
+    // VALUES SECTION
     // ========================================
-    $team_enabled = get_theme_mod('about_team_enabled', true);
-    if ($team_enabled) :
-        $team_badge    = trim(get_theme_mod('about_team_badge', __('TEAM', 'apl-theme')));
-        $team_title_1  = trim(get_theme_mod('about_team_title_1', __('The Visionaries', 'apl-theme')));
-        $team_title_2  = trim(get_theme_mod('about_team_title_2', __('Behind Our Success', 'apl-theme')));
+    $values_enabled = get_theme_mod('about_values_enabled', true);
+    if ($values_enabled) :
+        $values_badge = trim(get_theme_mod('about_values_badge', __('OUR VALUES', 'apl-theme')));
+        $values_title = trim(get_theme_mod('about_values_title', __('What Drives Us Forward', 'apl-theme')));
 
-        // Get team members from CPT
-        $team_members = get_posts(array(
+        $values = array();
+        for ($i = 1; $i <= 4; $i++) {
+            $title = trim(get_theme_mod("about_value{$i}_title", ''));
+            $desc  = trim(get_theme_mod("about_value{$i}_desc", ''));
+            if (!empty($title)) {
+                $values[] = array('title' => $title, 'desc' => $desc);
+            }
+        }
+    ?>
+    <?php if (!empty($values)) : ?>
+    <section class="apl-about__values">
+        <div class="apl-about__container">
+            <?php if (!empty($values_badge)) : ?>
+                <span class="apl-about__badge"><?php echo esc_html($values_badge); ?></span>
+            <?php endif; ?>
+            <?php if (!empty($values_title)) : ?>
+                <h2 class="apl-about__section-title apl-about__section-title--center"><?php echo esc_html($values_title); ?></h2>
+            <?php endif; ?>
+
+            <div class="apl-about__values-grid">
+                <?php foreach ($values as $index => $value) : ?>
+                    <div class="apl-about__value-card">
+                        <div class="apl-about__value-number"><?php echo sprintf('%02d', $index + 1); ?></div>
+                        <h3 class="apl-about__value-title"><?php echo esc_html($value['title']); ?></h3>
+                        <?php if (!empty($value['desc'])) : ?>
+                            <p class="apl-about__value-desc"><?php echo esc_html($value['desc']); ?></p>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+    <?php endif; ?>
+
+    <?php
+    // ========================================
+    // TEAM SECTION (SAME AS HOME PAGE)
+    // ========================================
+    $about_team_enabled = get_theme_mod('about_team_enabled', true);
+    if ($about_team_enabled) :
+        // Get Customizer settings
+        $about_section_title = get_theme_mod('about_people_title', 'Meet the brains');
+        $about_enable_advisors = (bool) get_theme_mod('about_people_enable_advisors', false);
+        $about_default_tab = get_theme_mod('about_people_default_tab', 'advisors');
+
+        // Query Team members
+        $about_team_args = array(
             'post_type'      => 'apl_person',
-            'posts_per_page' => -1,
-            'orderby'        => 'menu_order',
-            'order'          => 'ASC',
+            'posts_per_page' => 50,
+            'orderby'        => array('menu_order' => 'ASC', 'date' => 'DESC'),
             'tax_query'      => array(
                 array(
                     'taxonomy' => 'apl_person_group',
@@ -219,172 +241,156 @@ get_header();
                     'terms'    => 'team',
                 ),
             ),
-        ));
-    ?>
-    <section class="apl-about__team">
-        <div class="apl-about__panel">
-            <?php if (!empty($team_badge)) : ?>
-                <span class="apl-about__badge"><?php echo esc_html($team_badge); ?></span>
-            <?php endif; ?>
-            <div class="apl-about__team-header">
-                <?php if (!empty($team_title_1)) : ?>
-                    <h2 class="apl-about__team-title"><?php echo esc_html($team_title_1); ?></h2>
-                <?php endif; ?>
-                <?php if (!empty($team_title_2)) : ?>
-                    <h2 class="apl-about__team-title apl-about__team-title--accent"><?php echo esc_html($team_title_2); ?></h2>
-                <?php endif; ?>
-            </div>
+        );
+        $about_team_query = new WP_Query($about_team_args);
+        $about_team_members = array();
 
-            <?php if (!empty($team_members)) : ?>
-                <div class="apl-about__team-grid">
-                    <?php foreach ($team_members as $member) :
-                        $member_name = get_the_title($member);
-                        $member_role = get_post_meta($member->ID, 'apl_role', true);
-                        $member_desc = get_the_content(null, false, $member);
-                        $member_photo = get_the_post_thumbnail_url($member, 'full');
-                    ?>
-                        <article class="apl-about__team-card">
-                            <div class="apl-about__team-card-header">
-                                <div class="apl-about__team-info">
-                                    <h3 class="apl-about__team-name"><?php echo esc_html($member_name); ?></h3>
-                                    <?php if (!empty($member_role)) : ?>
-                                        <p class="apl-about__team-role"><?php echo esc_html($member_role); ?></p>
-                                    <?php endif; ?>
-                                </div>
-                                <?php if (!empty($member_desc)) : ?>
-                                    <p class="apl-about__team-desc"><?php echo esc_html($member_desc); ?></p>
-                                <?php endif; ?>
-                            </div>
-                            <div class="apl-about__team-badge-container">
-                                <div class="apl-about__team-badge">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 2L2 7V12C2 16.97 6.03 21 12 22C17.97 21 22 16.97 22 12V7L12 2Z" fill="currentColor"/>
-                                    </svg>
-                                    <span>Qupe</span>
-                                </div>
-                                <?php if (!empty($member_photo)) : ?>
-                                    <div class="apl-about__team-photo">
-                                        <img src="<?php echo esc_url($member_photo); ?>" alt="<?php echo esc_attr($member_name); ?>">
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    </section>
-    <?php endif; ?>
+        if ($about_team_query->have_posts()) {
+            while ($about_team_query->have_posts()) {
+                $about_team_query->the_post();
+                $person_id = get_the_ID();
+                $role = get_post_meta($person_id, 'apl_role', true);
+                $linkedin = get_post_meta($person_id, 'apl_linkedin', true);
+                $photo = get_the_post_thumbnail_url($person_id, 'medium');
 
-    <?php
-    // ========================================
-    // MOBILE APP BANKING SECTION
-    // ========================================
-    $mobile_enabled = get_theme_mod('about_mobile_enabled', true);
-    if ($mobile_enabled) :
-        $mobile_badge    = trim(get_theme_mod('about_mobile_badge', __('MOBIL APP', 'apl-theme')));
-        $mobile_title_1  = trim(get_theme_mod('about_mobile_title_1', __('Mobile App Banking', 'apl-theme')));
-        $mobile_title_2  = trim(get_theme_mod('about_mobile_title_2', __('at Your Fingertips', 'apl-theme')));
-        $mobile_subtitle = trim(get_theme_mod('about_mobile_subtitle', ''));
+                // Only include if has title AND role AND photo
+                if (get_the_title() && $role && $photo) {
+                    $about_team_members[] = array(
+                        'name'     => get_the_title(),
+                        'role'     => $role,
+                        'photo'    => $photo,
+                        'linkedin' => $linkedin,
+                    );
+                }
+            }
+            wp_reset_postdata();
+        }
 
-        // Get features
-        $features = array();
-        for ($i = 1; $i <= 2; $i++) {
-            $feature_title = trim(get_theme_mod("about_mobile_feature{$i}_title", ''));
-            $feature_desc  = trim(get_theme_mod("about_mobile_feature{$i}_desc", ''));
-            if (!empty($feature_title)) {
-                $features[] = array(
-                    'title' => $feature_title,
-                    'desc'  => $feature_desc,
-                );
+        // Query Advisors members (if enabled)
+        $about_advisors_members = array();
+        if ($about_enable_advisors) {
+            $about_advisors_args = array(
+                'post_type'      => 'apl_person',
+                'posts_per_page' => 50,
+                'orderby'        => array('menu_order' => 'ASC', 'date' => 'DESC'),
+                'tax_query'      => array(
+                    array(
+                        'taxonomy' => 'apl_person_group',
+                        'field'    => 'slug',
+                        'terms'    => 'advisors',
+                    ),
+                ),
+            );
+            $about_advisors_query = new WP_Query($about_advisors_args);
+
+            if ($about_advisors_query->have_posts()) {
+                while ($about_advisors_query->have_posts()) {
+                    $about_advisors_query->the_post();
+                    $person_id = get_the_ID();
+                    $role = get_post_meta($person_id, 'apl_role', true);
+                    $linkedin = get_post_meta($person_id, 'apl_linkedin', true);
+                    $photo = get_the_post_thumbnail_url($person_id, 'medium');
+
+                    // Only include if has title AND role AND photo
+                    if (get_the_title() && $role && $photo) {
+                        $about_advisors_members[] = array(
+                            'name'     => get_the_title(),
+                            'role'     => $role,
+                            'photo'    => $photo,
+                            'linkedin' => $linkedin,
+                        );
+                    }
+                }
+                wp_reset_postdata();
             }
         }
 
-        // Get app images
-        $app_image1 = apl_get_media_url('about_mobile_image1');
-        $app_image2 = apl_get_media_url('about_mobile_image2');
-    ?>
-    <section class="apl-about__mobile">
-        <div class="apl-about__panel">
-            <div class="apl-about__mobile-content">
-                <?php if (!empty($mobile_badge)) : ?>
-                    <span class="apl-about__badge"><?php echo esc_html($mobile_badge); ?></span>
-                <?php endif; ?>
-                <h2 class="apl-about__mobile-title">
-                    <?php if (!empty($mobile_title_1)) : ?>
-                        <?php echo esc_html($mobile_title_1); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($mobile_title_2)) : ?>
-                        <span class="apl-about__mobile-title--accent"><?php echo esc_html($mobile_title_2); ?></span>
-                    <?php endif; ?>
-                </h2>
-                <?php if (!empty($mobile_subtitle)) : ?>
-                    <p class="apl-about__mobile-subtitle"><?php echo esc_html($mobile_subtitle); ?></p>
+        // Determine actual default tab (fallback to team if advisors empty)
+        $about_show_pills = $about_enable_advisors && !empty($about_advisors_members);
+        $about_active_tab = ($about_show_pills && $about_default_tab === 'advisors') ? 'advisors' : 'team';
+        ?>
+
+        <?php if (!empty($about_team_members)) : ?>
+        <section class="apl-people" aria-label="<?php echo esc_attr($about_section_title); ?>">
+            <div class="apl-people__container">
+
+                <h2 class="apl-people__title"><?php echo esc_html($about_section_title); ?></h2>
+                <p class="apl-people__subtitle">The Brains Behind the Breakthrough</p>
+
+                <?php if ($about_show_pills) : ?>
+                    <div class="apl-people__pills" role="tablist">
+                        <button
+                            class="apl-people__pill <?php echo ($about_active_tab === 'advisors') ? 'is-active' : ''; ?>"
+                            data-tab="advisors"
+                            role="tab"
+                            aria-selected="<?php echo ($about_active_tab === 'advisors') ? 'true' : 'false'; ?>"
+                            aria-controls="about-panel-advisors">
+                            <?php _e('Advisors', 'apl-theme'); ?>
+                        </button>
+                        <button
+                            class="apl-people__pill <?php echo ($about_active_tab === 'team') ? 'is-active' : ''; ?>"
+                            data-tab="team"
+                            role="tab"
+                            aria-selected="<?php echo ($about_active_tab === 'team') ? 'true' : 'false'; ?>"
+                            aria-controls="about-panel-team">
+                            <?php _e('Team', 'apl-theme'); ?>
+                        </button>
+                    </div>
                 <?php endif; ?>
 
-                <?php if (!empty($features)) : ?>
-                    <ul class="apl-about__mobile-features">
-                        <?php foreach ($features as $feature) : ?>
-                            <li class="apl-about__mobile-feature">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="10" cy="10" r="10" fill="#FF7A18"/>
-                                    <path d="M6 10L9 13L14 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <div>
-                                    <strong><?php echo esc_html($feature['title']); ?>:</strong>
-                                    <?php if (!empty($feature['desc'])) : ?>
-                                        <?php echo esc_html($feature['desc']); ?>
-                                    <?php endif; ?>
+                <?php if ($about_show_pills && !empty($about_advisors_members)) : ?>
+                    <div
+                        class="apl-people__panel <?php echo ($about_active_tab === 'advisors') ? 'is-active' : ''; ?>"
+                        data-panel="advisors"
+                        id="about-panel-advisors"
+                        role="tabpanel">
+                        <div class="apl-people__grid">
+                            <?php foreach ($about_advisors_members as $person) : ?>
+                                <?php
+                                $card_tag = $person['linkedin'] ? 'a' : 'div';
+                                $card_attrs = $person['linkedin'] ? 'href="' . esc_url($person['linkedin']) . '" target="_blank" rel="noopener noreferrer"' : '';
+                                ?>
+                                <<?php echo $card_tag; ?> class="apl-people__card" <?php echo $card_attrs; ?>>
+                                    <div class="apl-people__avatar">
+                                        <img src="<?php echo esc_url($person['photo']); ?>" alt="<?php echo esc_attr($person['name']); ?>">
+                                    </div>
+                                    <div class="apl-people__info">
+                                        <h3 class="apl-people__name"><?php echo esc_html($person['name']); ?></h3>
+                                        <p class="apl-people__role"><?php echo esc_html($person['role']); ?></p>
+                                    </div>
+                                </<?php echo $card_tag; ?>>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div
+                    class="apl-people__panel <?php echo ($about_active_tab === 'team') ? 'is-active' : ''; ?>"
+                    data-panel="team"
+                    id="about-panel-team"
+                    role="tabpanel">
+                    <div class="apl-people__grid">
+                        <?php foreach ($about_team_members as $person) : ?>
+                            <?php
+                            $card_tag = $person['linkedin'] ? 'a' : 'div';
+                            $card_attrs = $person['linkedin'] ? 'href="' . esc_url($person['linkedin']) . '" target="_blank" rel="noopener noreferrer"' : '';
+                            ?>
+                            <<?php echo $card_tag; ?> class="apl-people__card" <?php echo $card_attrs; ?>>
+                                <div class="apl-people__avatar">
+                                    <img src="<?php echo esc_url($person['photo']); ?>" alt="<?php echo esc_attr($person['name']); ?>">
                                 </div>
-                            </li>
+                                <div class="apl-people__info">
+                                    <h3 class="apl-people__name"><?php echo esc_html($person['name']); ?></h3>
+                                    <p class="apl-people__role"><?php echo esc_html($person['role']); ?></p>
+                                </div>
+                            </<?php echo $card_tag; ?>>
                         <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-
-            <div class="apl-about__mobile-images">
-                <?php if (!empty($app_image1)) : ?>
-                    <div class="apl-about__mobile-image">
-                        <img src="<?php echo esc_url($app_image1); ?>" alt="Mobile app screen 1">
                     </div>
-                <?php endif; ?>
-                <?php if (!empty($app_image2)) : ?>
-                    <div class="apl-about__mobile-image">
-                        <img src="<?php echo esc_url($app_image2); ?>" alt="Mobile app screen 2">
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
-    <?php endif; ?>
-
-    <?php
-    // ========================================
-    // CEO MESSAGE SECTION
-    // ========================================
-    $ceo_enabled = get_theme_mod('about_ceo_enabled', true);
-    if ($ceo_enabled) :
-        $ceo_image = apl_get_media_url('about_ceo_image');
-        $ceo_text1 = trim(get_theme_mod('about_ceo_text1', ''));
-        $ceo_text2 = trim(get_theme_mod('about_ceo_text2', ''));
-    ?>
-    <section class="apl-about__ceo">
-        <div class="apl-about__panel">
-            <?php if (!empty($ceo_image)) : ?>
-                <div class="apl-about__ceo-image">
-                    <img src="<?php echo esc_url($ceo_image); ?>" alt="CEO">
                 </div>
-            <?php endif; ?>
-            <div class="apl-about__ceo-content">
-                <?php if (!empty($ceo_text1)) : ?>
-                    <p class="apl-about__ceo-text"><?php echo esc_html($ceo_text1); ?></p>
-                <?php endif; ?>
-                <?php if (!empty($ceo_text2)) : ?>
-                    <p class="apl-about__ceo-text"><?php echo esc_html($ceo_text2); ?></p>
-                <?php endif; ?>
+
             </div>
-        </div>
-    </section>
+        </section>
+        <?php endif; ?>
     <?php endif; ?>
 
     <?php
@@ -393,83 +399,106 @@ get_header();
     // ========================================
     $testimonials_enabled = get_theme_mod('about_testimonials_enabled', true);
     if ($testimonials_enabled) :
-        $testimonials_badge = trim(get_theme_mod('about_testimonials_badge', __('TESTIMONIAL', 'apl-theme')));
-        $testimonials_title = trim(get_theme_mod('about_testimonials_title', __('What people who work with us think about us?', 'apl-theme')));
+        $testimonials_badge = trim(get_theme_mod('about_testimonials_badge', __('TESTIMONIALS', 'apl-theme')));
+        $testimonials_title = trim(get_theme_mod('about_testimonials_title', __('Trusted by Industry Leaders', 'apl-theme')));
 
-        // Get testimonials
         $testimonials = array();
-        for ($i = 1; $i <= 8; $i++) {
-            $test_name = trim(get_theme_mod("about_testimonial{$i}_name", ''));
-            $test_role = trim(get_theme_mod("about_testimonial{$i}_role", ''));
-            $test_text = trim(get_theme_mod("about_testimonial{$i}_text", ''));
-            $test_photo = apl_get_media_url("about_testimonial{$i}_photo");
-            if (!empty($test_name) && !empty($test_text)) {
+        for ($i = 1; $i <= 6; $i++) {
+            $name = trim(get_theme_mod("about_testimonial{$i}_name", ''));
+            $role = trim(get_theme_mod("about_testimonial{$i}_role", ''));
+            $text = trim(get_theme_mod("about_testimonial{$i}_text", ''));
+            $company = trim(get_theme_mod("about_testimonial{$i}_company", ''));
+            $photo = apl_get_media_url("about_testimonial{$i}_photo");
+
+            if (!empty($name) && !empty($text)) {
                 $testimonials[] = array(
-                    'name'  => $test_name,
-                    'role'  => $test_role,
-                    'text'  => $test_text,
-                    'photo' => $test_photo,
+                    'name'    => $name,
+                    'role'    => $role,
+                    'text'    => $text,
+                    'company' => $company,
+                    'photo'   => $photo,
                 );
             }
         }
     ?>
+    <?php if (!empty($testimonials)) : ?>
     <section class="apl-about__testimonials">
-        <div class="apl-about__panel">
+        <div class="apl-about__container">
             <?php if (!empty($testimonials_badge)) : ?>
                 <span class="apl-about__badge"><?php echo esc_html($testimonials_badge); ?></span>
             <?php endif; ?>
             <?php if (!empty($testimonials_title)) : ?>
-                <h2 class="apl-about__testimonials-title"><?php echo esc_html($testimonials_title); ?></h2>
+                <h2 class="apl-about__section-title apl-about__section-title--center"><?php echo esc_html($testimonials_title); ?></h2>
             <?php endif; ?>
 
-            <?php if (!empty($testimonials)) : ?>
-                <div class="apl-about__testimonials-grid">
-                    <?php foreach ($testimonials as $testimonial) : ?>
-                        <article class="apl-about__testimonial">
-                            <div class="apl-about__testimonial-header">
-                                <?php if (!empty($testimonial['photo'])) : ?>
-                                    <img class="apl-about__testimonial-photo" src="<?php echo esc_url($testimonial['photo']); ?>" alt="<?php echo esc_attr($testimonial['name']); ?>">
-                                <?php endif; ?>
-                                <div>
-                                    <h3 class="apl-about__testimonial-name"><?php echo esc_html($testimonial['name']); ?></h3>
-                                    <?php if (!empty($testimonial['role'])) : ?>
-                                        <p class="apl-about__testimonial-role"><?php echo esc_html($testimonial['role']); ?></p>
-                                    <?php endif; ?>
+            <div class="apl-about__testimonials-grid">
+                <?php foreach ($testimonials as $testimonial) : ?>
+                    <div class="apl-about__testimonial-card">
+                        <div class="apl-about__testimonial-quote">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M10 20C11.6569 20 13 18.6569 13 17C13 15.3431 11.6569 14 10 14C8.34315 14 7 15.3431 7 17C7 18.6569 8.34315 20 10 20Z" fill="#FF7A18" opacity="0.2"/>
+                                <path d="M22 20C23.6569 20 25 18.6569 25 17C25 15.3431 23.6569 14 22 14C20.3431 14 19 15.3431 19 17C19 18.6569 20.3431 20 22 20Z" fill="#FF7A18" opacity="0.2"/>
+                                <path d="M10 14V10C10 8.89543 10.8954 8 12 8H14M22 14V10C22 8.89543 22.8954 8 24 8H26" stroke="#FF7A18" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <p class="apl-about__testimonial-text"><?php echo esc_html($testimonial['text']); ?></p>
+                        <div class="apl-about__testimonial-author">
+                            <?php if (!empty($testimonial['photo'])) : ?>
+                                <img class="apl-about__testimonial-photo" src="<?php echo esc_url($testimonial['photo']); ?>" alt="<?php echo esc_attr($testimonial['name']); ?>">
+                            <?php else : ?>
+                                <div class="apl-about__testimonial-photo apl-about__testimonial-photo--placeholder">
+                                    <span><?php echo esc_html(substr($testimonial['name'], 0, 1)); ?></span>
                                 </div>
+                            <?php endif; ?>
+                            <div class="apl-about__testimonial-info">
+                                <div class="apl-about__testimonial-name"><?php echo esc_html($testimonial['name']); ?></div>
+                                <?php if (!empty($testimonial['role'])) : ?>
+                                    <div class="apl-about__testimonial-role">
+                                        <?php echo esc_html($testimonial['role']); ?>
+                                        <?php if (!empty($testimonial['company'])) : ?>
+                                            <span class="apl-about__testimonial-company"> at <?php echo esc_html($testimonial['company']); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                            <p class="apl-about__testimonial-text"><?php echo esc_html($testimonial['text']); ?></p>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-
-                <?php if (count($testimonials) > 6) : ?>
-                    <div class="apl-about__testimonials-more">
-                        <button class="apl-about__btn-more"><?php echo esc_html(get_theme_mod('about_testimonials_more_label', __('Learn More', 'apl-theme'))); ?></button>
+                        </div>
                     </div>
-                <?php endif; ?>
-            <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
         </div>
     </section>
+    <?php endif; ?>
     <?php endif; ?>
 
     <?php
     // ========================================
-    // FINAL CTA SECTION
+    // CTA SECTION
     // ========================================
     $cta_enabled = get_theme_mod('about_cta_enabled', true);
     if ($cta_enabled) :
-        $cta_title = trim(get_theme_mod('about_cta_title', __('Open an account for exclusive financial perks', 'apl-theme')));
-        $cta_button_text = trim(get_theme_mod('about_cta_button_text', __('Get started - for free', 'apl-theme')));
+        $cta_title = trim(get_theme_mod('about_cta_title', __('Ready to Transform Your Financial Future?', 'apl-theme')));
+        $cta_subtitle = trim(get_theme_mod('about_cta_subtitle', __('Join thousands of satisfied customers who trust us with their financial success.', 'apl-theme')));
+        $cta_button_text = trim(get_theme_mod('about_cta_button_text', __('Get Started Today', 'apl-theme')));
         $cta_button_url = trim(get_theme_mod('about_cta_button_url', '#'));
     ?>
     <section class="apl-about__cta">
-        <div class="apl-about__panel apl-about__panel--cta">
-            <?php if (!empty($cta_title)) : ?>
-                <h2 class="apl-about__cta-title"><?php echo esc_html($cta_title); ?></h2>
-            <?php endif; ?>
-            <?php if (!empty($cta_button_text) && !empty($cta_button_url)) : ?>
-                <a href="<?php echo esc_url($cta_button_url); ?>" class="apl-about__cta-button"><?php echo esc_html($cta_button_text); ?></a>
-            <?php endif; ?>
+        <div class="apl-about__container">
+            <div class="apl-about__cta-content">
+                <?php if (!empty($cta_title)) : ?>
+                    <h2 class="apl-about__cta-title"><?php echo esc_html($cta_title); ?></h2>
+                <?php endif; ?>
+                <?php if (!empty($cta_subtitle)) : ?>
+                    <p class="apl-about__cta-subtitle"><?php echo esc_html($cta_subtitle); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($cta_button_text) && !empty($cta_button_url)) : ?>
+                    <a href="<?php echo esc_url($cta_button_url); ?>" class="apl-about__cta-button">
+                        <?php echo esc_html($cta_button_text); ?>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
     </section>
     <?php endif; ?>
